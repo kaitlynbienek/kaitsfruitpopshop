@@ -6,7 +6,6 @@
   <title>Kait’s Fruit Pop Shop | Candied & Sour Frozen Fruit</title>
   <meta name="description" content="Fresh candied and extreme sour frozen fruit made in Liberty, TX. Order for pickup starting August 10th." />
   <style>
-    /* Include your CSS styles here (unchanged from your original code) */
     :root {
       --pink: #ff4d94;
       --sour: #a3e635;
@@ -16,11 +15,13 @@
       --light: #fdf4ff;
       --card: #ffffff;
     }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
+
     body {
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       background: linear-gradient(135deg, #fdf4ff 0%, #e0f2fe 50%, #fce7f3 100%);
@@ -28,12 +29,15 @@
       line-height: 1.5;
       min-height: 100vh;
     }
+
     .container {
       max-width: 900px;
       margin: 0 auto;
       padding: 0 16px 60px;
     }
-    /* ... include all your CSS styles from your original code ... */
+
+    /* Your existing styles... (keep your original CSS here) */
+
     #successMessage {
       display: none;
       background: #dcfce7;
@@ -67,7 +71,6 @@
       <h2>🍇 Single Fruit Boxes — $35 each</h2>
       <p style="margin-bottom:14px; font-size:0.95rem; color:#64748b;">All single fruit boxes are frozen & prepared fresh on your pickup day.</p>
       <div class="product-grid" id="singleProducts">
-        <!-- Candied Grapes -->
         <div class="product-card" data-id="grapes" data-name="Candied Grapes" data-price="35">
           <h3>Candied Grapes</h3>
           <div class="price">$35</div>
@@ -78,7 +81,6 @@
             <button type="button" onclick="changeQty('grapes', 1)">+</button>
           </div>
         </div>
-        <!-- Mango -->
         <div class="product-card" data-id="mango" data-name="Candied Mango" data-price="35">
           <h3>Candied Mango</h3>
           <div class="price">$35</div>
@@ -89,7 +91,6 @@
             <button type="button" onclick="changeQty('mango', 1)">+</button>
           </div>
         </div>
-        <!-- Pineapple -->
         <div class="product-card" data-id="pineapple" data-name="Candied Pineapple" data-price="35">
           <h3>Candied Pineapple</h3>
           <div class="price">$35</div>
@@ -100,7 +101,6 @@
             <button type="button" onclick="changeQty('pineapple', 1)">+</button>
           </div>
         </div>
-        <!-- Kiwi -->
         <div class="product-card" data-id="kiwi" data-name="Candied Kiwi" data-price="35">
           <h3>Candied Kiwi</h3>
           <div class="price">$35</div>
@@ -111,7 +111,6 @@
             <button type="button" onclick="changeQty('kiwi', 1)">+</button>
           </div>
         </div>
-        <!-- Gushers -->
         <div class="product-card" data-id="gushers" data-name="Blue Extreme Sour Gushers" data-price="30">
           <h3>Blue Extreme Sour Gushers</h3>
           <div class="price">$30</div>
@@ -129,7 +128,6 @@
     <section>
       <h2>🎁 Specialty Boxes</h2>
       <div class="product-grid" id="boxProducts">
-        <!-- Small Test Box -->
         <div class="product-card" data-id="small-test" data-name="Small Test Box (Sample)" data-price="25">
           <h3>Small Test Box</h3>
           <div class="price">$25</div>
@@ -140,7 +138,6 @@
             <button type="button" onclick="changeQty('small-test', 1)">+</button>
           </div>
         </div>
-        <!-- Party Box -->
         <div class="product-card" data-id="party" data-name="Party Test Box" data-price="100">
           <h3>Party Test Box</h3>
           <div class="price">$100</div>
@@ -151,7 +148,6 @@
             <button type="button" onclick="changeQty('party', 1)">+</button>
           </div>
         </div>
-        <!-- Girl Birthday Box -->
         <div class="product-card" data-id="girl-bday" data-name="Girl Birthday Box" data-price="45">
           <h3>Girl Birthday Box</h3>
           <div class="price">$45</div>
@@ -162,7 +158,6 @@
             <button type="button" onclick="changeQty('girl-bday', 1)">+</button>
           </div>
         </div>
-        <!-- Boy Birthday Box -->
         <div class="product-card" data-id="boy-bday" data-name="Boy Birthday Box" data-price="45">
           <h3>Boy Birthday Box</h3>
           <div class="price">$45</div>
@@ -181,34 +176,34 @@
       <h2>🔥 Toppings (small container on the side)</h2>
       <div class="topping-list">
         <div class="topping-item">
-          <input type="checkbox" id="top-jolly" data-name="Crushed Jolly Ranchers" data-price="4" onchange="updateSummary()" />
+          <input type="checkbox" id="top-jolly" data-name="Crushed Jolly Ranchers" data-price="4" onchange="updateSummary()">
           <label for="top-jolly">Crushed Jolly Ranchers</label>
           <span class="topping-price">+$4</span>
         </div>
         <div class="topping-item">
-          <input type="checkbox" id="top-poprocks" data-name="Pop Rocks" data-price="4" onchange="updateSummary()" />
+          <input type="checkbox" id="top-poprocks" data-name="Pop Rocks" data-price="4" onchange="updateSummary()">
           <label for="top-poprocks">Pop Rocks</label>
           <span class="topping-price">+$4</span>
         </div>
         <div class="topping-item">
-          <input type="checkbox" id="top-powder" data-name="Extra Sour Powder" data-price="3" onchange="updateSummary()" />
+          <input type="checkbox" id="top-powder" data-name="Extra Sour Powder" data-price="3" onchange="updateSummary()">
           <label for="top-powder">Extra Sour Powder</label>
           <span class="topping-price">+$3</span>
         </div>
         <div class="topping-item">
-          <input type="checkbox" id="top-sauce" data-name="Signature Sour Dip" data-price="5" onchange="updateSummary()" />
+          <input type="checkbox" id="top-sauce" data-name="Signature Sour Dip" data-price="5" onchange="updateSummary()">
           <label for="top-sauce">Signature Sour Dip</label>
           <span class="topping-price">+$5</span>
         </div>
         <div class="topping-item">
-          <input type="checkbox" id="top-rollups" data-name="Fruit Roll-Up on half the order" data-price="6" onchange="updateSummary()" />
+          <input type="checkbox" id="top-rollups" data-name="Fruit Roll-Up on half the order" data-price="6" onchange="updateSummary()">
           <label for="top-rollups">Fruit Roll-Up on half the order</label>
           <span class="topping-price">+$6</span>
         </div>
       </div>
     </section>
 
-    <!-- Order form: wrapped all inputs and button inside a form -->
+    <!-- Order Form -->
     <section>
       <h2>📅 Place Your Order</h2>
       <form
@@ -217,18 +212,18 @@
         data-netlify="true"
       >
         <label for="pickupDate">Preferred Pickup Date <span style="font-weight:400; font-size:0.9rem; color:#64748b;">(No Sunday pickups)</span></label>
-        <input type="date" id="pickupDate" name="pickupDate" min="2026-08-10" required />
+        <input type="date" id="pickupDate" name="pickupDate" min="2026-08-10" required>
 
         <label for="customerName">Your Name</label>
-        <input type="text" id="customerName" name="name" placeholder="First & last name" required />
+        <input type="text" id="customerName" name="name" placeholder="First & last name" required>
 
         <label for="customerPhone">Phone Number</label>
-        <input type="text" id="customerPhone" name="phone" placeholder="For order updates" required />
+        <input type="text" id="customerPhone" name="phone" placeholder="For order updates" required>
 
         <label for="specialRequests">Special Requests / Notes</label>
         <textarea id="specialRequests" name="notes" placeholder="Allergies, packaging notes, etc. (Want the signature sour dip or crushed Jolly on the side? Add it above!)"></textarea>
 
-        <!-- summary display -->
+        <!-- Summary -->
         <div class="summary-box">
           <div class="summary-row">
             <span>Subtotal</span>
@@ -244,15 +239,14 @@
           </div>
         </div>
 
-        <!-- submit button -->
-        <button class="btn" style="margin-top:24px;" type="submit">Submit Order</button>
+        <button class="btn" style="margin-top:24px;" type="submit">Submit Order Request</button>
       </form>
       <div id="successMessage">
-        ✅ Order request received!<br /><br />
-        Please send the <strong id="finalDeposit"></strong> deposit via:<br />
-        • Venmo: <a href="https://venmo.com/u/Kdbkatt" target="_blank">@Kdbkatt</a><br />
-        • Zelle: Kaitlynbienek@gmail.com<br />
-        • Apple Cash: 832-873-9324<br /><br />
+        ✅ Order request received!<br><br>
+        Please send the <strong id="finalDeposit"></strong> deposit via:<br>
+        • Venmo: <a href="https://venmo.com/u/Kdbkatt" target="_blank">@Kdbkatt</a><br>
+        • Zelle: Kaitlynbienek@gmail.com<br>
+        • Apple Cash: 832-873-9324<br><br>
         Then message Kait with your name + pickup date to lock in the order.
       </div>
     </section>
@@ -272,7 +266,7 @@
   </footer>
 
   <script>
-    // Basic JS for quantity controls and summary
+    // Your JS for quantities and summary
     const qty = {
       grapes: 0,
       mango: 0,
@@ -329,7 +323,88 @@
       document.getElementById('deposit').textContent = '$' + deposit.toFixed(2);
     }
 
-    // You can keep or remove your submitOrder() function, since form submits normally now.
+    // Your submitOrder() function to build message and show success
+    function submitOrder() {
+      const date = document.getElementById('pickupDate').value;
+      const name = document.getElementById('customerName').value.trim();
+      const phone = document.getElementById('customerPhone').value.trim();
+      const notes = document.getElementById('specialRequests').value.trim();
+
+      if (!date) {
+        alert('Please choose a pickup date (August 10 or later).');
+        return;
+      }
+      if (!name || !phone) {
+        alert('Please enter your name and phone number.');
+        return;
+      }
+
+      // Build order text
+      let orderLines = [];
+      for (let id in qty) {
+        if (qty[id] > 0) {
+          orderLines.push(`${qty[id]} × ${names[id]} ($${prices[id]} each)`);
+        }
+      }
+      document.querySelectorAll('.topping-item input:checked').forEach(cb => {
+        orderLines.push(`+ ${cb.dataset.name} (+$${cb.dataset.price})`);
+      });
+
+      if (orderLines.length === 0) {
+        alert('Please select at least one product.');
+        return;
+      }
+
+      const subtotal = parseFloat(document.getElementById('total').textContent.replace('$',''));
+      const deposit = subtotal * 0.5;
+
+      const orderText = `
+🍊 KAIT’S FRUIT POP SHOP ORDER 🍊
+
+Name: ${name}
+Phone: ${phone}
+Pickup Date: ${date}
+
+ITEMS:
+${orderLines.join('\n')}
+
+Subtotal: $${subtotal.toFixed(2)}
+50% Deposit Due: $${deposit.toFixed(2)}
+
+Notes: ${notes || 'None'}
+
+Please send deposit via:
+Venmo: https://venmo.com/u/Kdbkatt
+Zelle: Kaitlynbienek@gmail.com
+Apple Cash: 832-873-9324
+
+Then message Kait with your name + pickup date to confirm.
+      `.trim();
+
+      document.getElementById('finalDeposit').textContent = '$' + deposit.toFixed(2);
+      document.getElementById('successMessage').style.display = 'block';
+
+      // Copy to clipboard
+      navigator.clipboard.writeText(orderText).then(() => {
+        alert('Order details copied to clipboard!\n\nPaste them in a message to Kait along with your deposit.');
+      }).catch(() => {
+        prompt('Copy this order and send it to Kait:', orderText);
+      });
+
+      document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Set min date
+    document.getElementById('pickupDate').min = '2026-08-10';
+
+    function checkSunday(input) {
+      if (!input.value) return;
+      const day = new Date(input.value + 'T12:00:00').getDay();
+      if (day === 0) {
+        alert('Sorry, we do not offer Sunday pickups. Please choose another day.');
+        input.value = '';
+      }
+    }
   </script>
 </body>
 </html>
