@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kait’s Fruit Pop Shop | Candied & Sour Frozen Fruit</title>
+  <meta name="description" content="Fresh candied and extreme sour frozen fruit made in Liberty, TX. Order for pickup starting August 10th.">
+  <style>
+    :root {
+      --pink: #ff4d94;
+      --sour: #a3e635;
+      --blue: #38bdf8;
+      --purple: #c084fc;
+      --dark: #1e1b4b;
+      --light: #fdf4ff;
+      --card: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #fdf4ff 0%, #e0f2fe 50%, #fce7f3 100%);
+      color: var(--dark);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 16px 60px;
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      padding: 40px 16px 30px;
+      background: linear-gradient(135deg, var(--pink), var(--purple));
+      color: white;
+      border-radius: 0 0 30px 30px;
+      box-shadow: 0 10px 30px rgba(255, 77, 148, 0.3);
+      margin-bottom: 30px;
+    }
+
+    header h1 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    }
+
+    header p {
+      font-size: 1.1rem;
+      opacity: 0.95;
+    }
+
+    .badge {
+      display: inline-block;
+      background: var(--sour);
+      color: #14532d;
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-top: 12px;
+    }
+
+    /* Sections */
+    section {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 16px;
+      color: var(--pink);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Products */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .product-card {
+      border: 2px solid #f5d0fe;
+      border-radius: 16px;
+      padding: 16px;
+      transition: all 0.25s ease;
+      background: #fdf4ff;
+    }
+
+    .product-card:hover {
+      border-color: var(--pink);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(255, 77, 148, 0.15);
+    }
+
+    .product-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 4px;
+    }
+
+    .price {
+      font-weight: 700;
+      color: var(--pink);
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+
+    .qty-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .qty-control button {
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 50%;
+      background: var(--pink);
+      color: white;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .qty-control button:hover {
+      background: #e11d74;
+    }
+
+    .qty-control span {
+      font-weight: 700;
+      min-width: 24px;
+      text-align: center;
+      font-size: 1.1rem;
+    }
+
+    /* Toppings */
+    .topping-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .topping-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: #f0fdf4;
+      border-radius: 12px;
+      border: 2px solid #bbf7d0;
+    }
+
+    .topping-item input {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--pink);
+    }
+
+    .topping-item label {
+      flex: 1;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .topping-price {
+      font-weight: 700;
+      color: #15803d;
+    }
+
+    /* Form elements */
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+    }
+
+    input[type="date"],
+    input[type="text"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #e9d5ff;
+      border-radius: 12px;
+      font-size: 1rem;
+      margin-bottom: 16px;
+      background: white;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--pink);
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    /* Order Summary */
+    .summary-box {
+      background: linear-gradient(135deg, #fdf4ff, #f0f9ff);
+      border: 2px solid var(--pink);
+      border-radius: 16px;
+      padding: 20px;
+      margin-top: 10px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 1.05rem;
+    }
+
+    .summary-row.total {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--pink);
+      border-top: 2px dashed #f9a8d4;
+      padding-top: 12px;
+      margin-top: 12px;
+    }
+
+    .summary-row.deposit {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #15803d;
+      background: #dcfce7;
+      padding: 10px 14px;
+      border-radius: 10px;
+      margin-top: 8px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--pink), var(--purple));
+      color: white;
+      font-weight: 700;
+      font-size: 1.15rem;
+      padding: 16px 32px;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      width: 100%;
+      text-align: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 6px 20px rgba(255, 77, 148, 0.35);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(255, 77, 148, 0.45);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    /* Payment info */
+    .payment-methods {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .pay-badge {
+      background: #f1f5f9;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 30px 16px;
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    footer a {
+      color: var(--pink);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 1.9rem;
+      }
+      .product-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Success message */
+    #successMessage {
+      display: none;
+      background: #dcfce7;
+      border: 2px solid #86efac;
+      color: #166534;
+      padding: 20px;
+      border-radius: 16px;
+      text-align: center;
+      font-size: 1.1rem;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 style="font-size: 2.7rem; letter-spacing: -1px; text-shadow: 0 3px 12px rgba(0,0,0,0.25);">Kait’s Fruit Pop Shop</h1>
+    <p>Candied • Extreme Sour • Frozen Fruit</p>
+    <div class="badge">Liberty, TX & surrounding areas</div>
+  </header>
+
+  <div class="container">
+    <!-- About -->
+    <section>
+      <h2>✨ Fresh & Poppin’</h2>
+      <p>Made-to-order candied and extreme sour frozen fruit using healthy alternative ingredients (No High Fructose Corn Syrup). Everything is prepared fresh on your pickup day. Orders open for pickup starting <strong>August 10, 2026</strong>.</p>
+      <p style="margin-top:10px;"><strong>50% deposit required</strong> to confirm your order (Venmo, Zelle, or Apple Cash).</p>
+    </section>
+
+    <!-- Single Fruits -->
+    <section>
+      <h2>🍇 Single Fruit Boxes — $35 each</h2>
+      <p style="margin-bottom:14px; font-size:0.95rem; color:#64748b;">All single fruit boxes are frozen & prepared fresh on your pickup day.</p>
+      <div class="product-grid" id="singleProducts">
+        <div class="product-card" data-id="grapes" data-name="Candied Grapes" data-price="35">
+          <h3>Candied Grapes</h3>
+          <div class="price">$35</div>
+          <p style="font-size:0.9rem;color:#64748b;">Classic sweet-tart freeze</p>
+          <div class="qty-control">
+            <button type="button" onclick="changeQty('grapes', -1)">−</button>
+            <span id="qty-grapes">0</span>
+            <button type="button" onclick="changeQty('grapes', 1)">+</button>
+          </div>
+        </div>
+
+        <div class="product-card" data-id="mango" data-name="Candied Mango" data-price="35">
+          <h3>Candied Mango</h3>
+          <div class="price">$35</div>
+          <p style="font-size:0.9rem;color:#64748b;">Juicy tropical candy bite</p>
+          <div class="qty-control">
+            <button type="button" onclick="changeQty('mango', -1)">−</button>
+            <span id="qty-mango">0</span>
+            <button type="button" onclick="changeQty('mango', 1)">+</button>
+          </div>
+        </div>
+
+        <div class="product-card" data-id="pineapple" data-name="Candied Pineapple" data-price="35">
+          <h3>Candied Pineapple</h3>
+          <div class="price">$35</div>
+          <p style="font-size:0.9rem;color:#64748b;">Bright tangy candy crunch</p>
+          <div class="qty-control">
+            <button type="button" onclick="changeQty('pineapple', -1)">−</button>
+            <span id="qty-pineapple">0</span>
+            <button type="button" onclick="changeQty('pineapple', 1)">+</button>
+          </div>
+        </div>
+
+        <div class="product-card" data-id="kiwi" data-name="Candied Kiwi" data-price="35">
+          <h3>Candied Kiwi</h3>
+          <div class="price">$35</div>
+          <p style="font-size:0.9rem;color:#64748b;">Zesty green candy pop</p>
+          <div class="qty-control">
+            <button type="button" onclick="changeQty('kiwi', -1)">−</button>
+            <span id="qty-kiwi">0</span>
+            <button type="button" onclick="changeQty('kiwi', 1)">+</button>
+          </div>
+        </div>
+
+        <div class="product-card" data-id="gushers" data-name="Blue Extreme Sour Gushers" data-price="35">
+          <h3>Blue Extreme Sour Gushers</h3>
+          <div class="price">$35</div>
+          <p style="font-size:0.9rem;color:#64748b;">Mouth-puckering blue sour</p>
+          <div class="qty-control">
+            <button type="button" onclick="changeQty('gushers', -1)">−</button>
+            <span id="qty-gushers">0</span>
+            <button type="button" onclick="changeQty('gushers', 1)">+</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Boxes -->
+    <section>
+      <h2>🎁 Specialty Boxes</h2>
+      <div class="product-grid" id="boxProducts">
+        <div class="product-card" data-id="small-test" data-name="Small Test Box (Sample)" data-price="25">
+          <h3>Small Test Box</h3>
+          <div class="price">$25</div>
+          <p style="font-size:0.9rem;color:#64748b;">Sample mix of 4 fruits</p>
+          <div class="qty-control">
+            <button type="button" onclick="changeQty('small-test', -1)">−</button>
+            <span id="qty-small-test">0</span>
+            <button type="button" onclick="changeQty('small-test', 1)">+</button>
+          </div>
+        </div>
+
+        <div class="product-card" data-id="party" data-name="Party Test Box" data-price="100">
+          <h3>Party Test Box</h3>
+          <div class="price">$100</div>
+          <p style="font-size:0.9rem;color:#64748b;">Huge sharing box – perfect for groups</p>
+          <div class="qty-control">
+            <button type="button" onclick="changeQty('party', -1)">−</button>
+            <span id="qty-party">0</span>
+            <button type="button" onclick="changeQty('party', 1)">+</button>
+          </div>
+        </div>
+
+        <div class="product-card" data-id="girl-bday" data-name="Girl Birthday Box" data-price="45">
+          <h3>Girl Birthday Box</h3>
+          <div class="price">$45</div>
+          <p style="font-size:0.9rem;color:#64748b;">Rainbow inspired candy box</p>
+          <div class="qty-control">
+            <button type="button" onclick="changeQty('girl-bday', -1)">−</button>
+            <span id="qty-girl-bday">0</span>
+            <button type="button" onclick="changeQty('girl-bday', 1)">+</button>
+          </div>
+        </div>
+
+        <div class="product-card" data-id="boy-bday" data-name="Boy Birthday Box" data-price="45">
+          <h3>Boy Birthday Box</h3>
+          <div class="price">$45</div>
+          <p style="font-size:0.9rem;color:#64748b;">Blue inspired candy box</p>
+          <div class="qty-control">
+            <button type="button" onclick="changeQty('boy-bday', -1)">−</button>
+            <span id="qty-boy-bday">0</span>
+            <button type="button" onclick="changeQty('boy-bday', 1)">+</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Toppings -->
+    <section>
+      <h2>🔥 Toppings (small container on the side)</h2>
+      <div class="topping-list">
+        <div class="topping-item">
+          <input type="checkbox" id="top-jolly" data-name="Crushed Jolly Ranchers" data-price="4" onchange="updateSummary()">
+          <label for="top-jolly">Crushed Jolly Ranchers</label>
+          <span class="topping-price">+$4</span>
+        </div>
+        <div class="topping-item">
+          <input type="checkbox" id="top-poprocks" data-name="Pop Rocks" data-price="4" onchange="updateSummary()">
+          <label for="top-poprocks">Pop Rocks</label>
+          <span class="topping-price">+$4</span>
+        </div>
+        <div class="topping-item">
+          <input type="checkbox" id="top-powder" data-name="Extra Sour Powder" data-price="3" onchange="updateSummary()">
+          <label for="top-powder">Extra Sour Powder</label>
+          <span class="topping-price">+$3</span>
+        </div>
+        <div class="topping-item">
+          <input type="checkbox" id="top-sauce" data-name="Signature Sour Dip" data-price="3" onchange="updateSummary()">
+          <label for="top-sauce">Signature Sour Dip</label>
+          <span class="topping-price">+$3</span>
+        </div>
+        <div class="topping-item">
+          <input type="checkbox" id="top-rollups" data-name="Fruit Roll-Up on half the order" data-price="6" onchange="updateSummary()">
+          <label for="top-rollups">Fruit Roll-Up on half the order</label>
+          <span class="topping-price">+$6</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Order Form -->
+    <section>
+      <h2>📅 Place Your Order</h2>
+
+      <label for="pickupDate">Preferred Pickup Date <span style="font-weight:400; font-size:0.9rem; color:#64748b;">(No Sunday pickups)</span></label>
+      <input type="date" id="pickupDate" min="2026-08-10" required onchange="checkSunday(this); updateSummary()">
+
+      <label for="customerName">Your Name</label>
+      <input type="text" id="customerName" placeholder="First & last name" required>
+
+      <label for="customerPhone">Phone Number</label>
+      <input type="text" id="customerPhone" placeholder="For order updates" required>
+
+      <label for="specialRequests">Special Requests / Notes</label>
+      <textarea id="specialRequests" placeholder="Allergies, packaging notes, etc. (Want the signature sour dip or crushed Jolly on the side? Add it above!)"></textarea>
+
+      <!-- Summary -->
+      <div class="summary-box">
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span id="subtotal">$0.00</span>
+        </div>
+        <div class="summary-row total">
+          <span>Total</span>
+          <span id="total">$0.00</span>
+        </div>
+        <div class="summary-row deposit">
+          <span>50% Deposit Due Now</span>
+          <span id="deposit">$0.00</span>
+        </div>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <p style="font-weight:600; margin-bottom:8px;">To confirm your order, send the deposit via:</p>
+        <div class="payment-methods">
+          <a href="https://venmo.com/u/Kdbkatt" target="_blank" class="pay-badge" style="text-decoration:none; color:inherit;">Venmo → @Kdbkatt</a>
+          <span class="pay-badge">Zelle → Kaitlynbienek@gmail.com</span>
+          <span class="pay-badge">Apple Cash → 832-873-9324</span>
+        </div>
+        <p style="font-size:0.9rem; color:#64748b; margin-top:10px;">
+          After submitting, send the deposit and message Kait with your name + pickup date to lock in the order.
+        </p>
+      </div>
+
+      <button class="btn" style="margin-top:24px;" onclick="submitOrder()">Submit Order Request</button>
+
+      <div id="successMessage">
+        ✅ Order request received!<br><br>
+        Please send the <strong id="finalDeposit"></strong> deposit via:<br>
+        • Venmo: <a href="https://venmo.com/u/Kdbkatt" target="_blank">@Kdbkatt</a><br>
+        • Zelle: Kaitlynbienek@gmail.com<br>
+        • Apple Cash: 832-873-9324<br><br>
+        Then message Kait with your name + pickup date to lock in the order.
+      </div>
+    </section>
+  </div>
+
+  <div class="container" style="margin-top: -10px; margin-bottom: 20px;">
+    <section style="background: #fefce8; border: 2px solid #fde047; padding: 16px 20px;">
+      <p style="font-size: 0.95rem; color: #854d0e; margin: 0;">
+        <strong>SAFE HANDLING INSTRUCTIONS:</strong> To prevent illness from bacteria, keep this food refrigerated or frozen until the food is prepared for consumption.
+      </p>
+    </section>
+  </div>
+
+  <footer>
+    <p>Kait’s Fruit Pop Shop • Liberty, TX & surrounding areas</p>
+    <p style="margin-top:6px;">Website made with help from Grok</p>
+  </footer>
+
+  <script>
+    // Quantities store
+    const qty = {
+      grapes: 0,
+      mango: 0,
+      pineapple: 0,
+      kiwi: 0,
+      gushers: 0,
+      'small-test': 0,
+      party: 0,
+      'girl-bday': 0,
+      'boy-bday': 0
+    };
+
+    const prices = {
+      grapes: 35,
+      mango: 35,
+      pineapple: 35,
+      kiwi: 35,
+      gushers: 35,
+      'small-test': 25,
+      party: 100,
+      'girl-bday': 45,
+      'boy-bday': 45
+    };
+
+    const names = {
+      grapes: 'Candied Grapes',
+      mango: 'Candied Mango',
+      pineapple: 'Candied Pineapple',
+      kiwi: 'Candied Kiwi',
+      gushers: 'Blue Extreme Sour Gushers',
+      'small-test': 'Small Test Box (Sample)',
+      party: 'Party Test Box',
+      'girl-bday': 'Girl Birthday Box',
+      'boy-bday': 'Boy Birthday Box'
+    };
+
+    function changeQty(id, delta) {
+      qty[id] = Math.max(0, qty[id] + delta);
+      document.getElementById('qty-' + id).textContent = qty[id];
+      updateSummary();
+    }
+
+    function updateSummary() {
+      let subtotal = 0;
+
+      // Products
+      for (let id in qty) {
+        subtotal += qty[id] * prices[id];
+      }
+
+      // Toppings
+      document.querySelectorAll('.topping-item input:checked').forEach(cb => {
+        subtotal += parseFloat(cb.dataset.price);
+      });
+
+      const deposit = subtotal * 0.5;
+
+      document.getElementById('subtotal').textContent = '$' + subtotal.toFixed(2);
+      document.getElementById('total').textContent = '$' + subtotal.toFixed(2);
+      document.getElementById('deposit').textContent = '$' + deposit.toFixed(2);
+    }
+
+    function submitOrder() {
+      const date = document.getElementById('pickupDate').value;
+      const name = document.getElementById('customerName').value.trim();
+      const phone = document.getElementById('customerPhone').value.trim();
+      const notes = document.getElementById('specialRequests').value.trim();
+
+      if (!date) {
+        alert('Please choose a pickup date (August 10 or later).');
+        return;
+      }
+      if (!name || !phone) {
+        alert('Please enter your name and phone number.');
+        return;
+      }
+
+      // Build order text
+      let orderLines = [];
+      for (let id in qty) {
+        if (qty[id] > 0) {
+          orderLines.push(`${qty[id]} × ${names[id]} ($${prices[id]} each)`);
+        }
+      }
+
+      document.querySelectorAll('.topping-item input:checked').forEach(cb => {
+        orderLines.push(`+ ${cb.dataset.name} (+$${cb.dataset.price})`);
+      });
+
+      if (orderLines.length === 0) {
+        alert('Please select at least one product.');
+        return;
+      }
+
+      const subtotal = parseFloat(document.getElementById('total').textContent.replace('$',''));
+      const deposit = subtotal * 0.5;
+
+      const orderText = `
+🍊 KAIT’S FRUIT POP SHOP ORDER 🍊
+
+Name: ${name}
+Phone: ${phone}
+Pickup Date: ${date}
+
+ITEMS:
+${orderLines.join('\n')}
+
+Subtotal: $${subtotal.toFixed(2)}
+50% Deposit Due: $${deposit.toFixed(2)}
+
+Notes: ${notes || 'None'}
+
+Please send deposit via:
+Venmo: https://venmo.com/u/Kdbkatt
+Zelle: Kaitlynbienek@gmail.com
+Apple Cash: 832-873-9324
+
+Then message Kait with your name + pickup date to confirm.
+      `.trim();
+
+      // Show success
+      document.getElementById('finalDeposit').textContent = '$' + deposit.toFixed(2);
+      document.getElementById('successMessage').style.display = 'block';
+
+      // Also copy to clipboard for easy pasting
+      navigator.clipboard.writeText(orderText).then(() => {
+        alert('Order details copied to clipboard!\n\nPaste them in a message to Kait along with your deposit.');
+      }).catch(() => {
+        // fallback
+        prompt('Copy this order and send it to Kait:', orderText);
+      });
+
+      // Scroll to success
+      document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Set min date properly
+    document.getElementById('pickupDate').min = '2026-08-10';
+
+    function checkSunday(input) {
+      if (!input.value) return;
+      const day = new Date(input.value + 'T12:00:00').getDay(); // 0 = Sunday
+      if (day === 0) {
+        alert('Sorry, we do not offer Sunday pickups. Please choose another day.');
+        input.value = '';
+      }
+    }
+  </script>
+</body>
+</html>
