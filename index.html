@@ -493,6 +493,15 @@
       </div>
     </section>
 
+    <!-- Hidden form for Netlify detection -->
+    <form name="fruit-orders" data-netlify="true" hidden>
+      <input type="text" name="name">
+      <input type="tel" name="phone">
+      <input type="date" name="pickup_date">
+      <textarea name="order_details"></textarea>
+      <textarea name="special_requests"></textarea>
+    </form>
+
     <!-- Order Form -->
     <section>
       <h2>📅 Place Your Order</h2>
@@ -537,7 +546,7 @@
         </p>
       </div>
 
-      <button type="submit" class="btn" style="margin-top:24px;">Submit Order Request</button>
+      <button type="button" class="btn" style="margin-top:24px;" onclick="submitOrder()">Submit Order Request</button>
 
       <div id="successMessage">
         ✅ Order request received!<br><br>
@@ -661,6 +670,30 @@
 
       const subtotal = parseFloat(document.getElementById('total').textContent.replace('$',''));
       const deposit = subtotal * 0.5;
+
+      const orderItemsText = orderLines.join('\n');
+
+      // --- NEW: Send Data to Netlify ---
+      const formData = new URLSearchParams();
+      formData.append("form-name", "fruit-orders");
+      formData.append("name", name);
+      formData.append("phone", phone);
+      formData.append("pickup_date", date);
+      formData.append("order_details", orderItemsText);
+      formData.append("special_requests", notes || "None");
+
+      fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: formData.toString(),
+      })
+      .then(() => {
+        console.log("Order successfully saved to Netlify!");
+      })
+      .catch((error) => {
+        console.error("Netlify submission error:", error);
+      });
+      // ---------------------------------
 
       const orderText = `
 🍊 KAIT’S FRUIT POP SHOP ORDER 🍊
