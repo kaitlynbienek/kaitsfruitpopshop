@@ -537,7 +537,11 @@
         </p>
       </div>
 
-      <button class="btn" style="margin-top:24px;" onclick="submitOrder()">Submit Order Request</button>
+      <form name="order" method="POST" data-netlify="true" onsubmit="event.preventDefault(); submitOrder();">
+  <!-- All your inputs and other elements inside here -->
+  <!-- Keep the button inside the form -->
+  <button class="btn" style="margin-top:24px;" type="submit">Submit Order Request</button>
+  </form>
 
       <div id="successMessage">
         ✅ Order request received!<br><br>
