@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kait’s Fruit Pop Shop | Candied & Sour Frozen Fruit</title>
+  <title>Kait’s See-Thru Sweets | Candied & Sour Frozen Fruit</title>
   <meta name="description" content="Fresh candied and extreme sour frozen fruit made in Liberty, TX. Order for pickup starting August 10th.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍇</text></svg>">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -22,6 +22,11 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+    }
+
+    /* Smooth scrolling: any anchor-link or JS scrollIntoView() call glides instead of jumping */
+    html {
+      scroll-behavior: smooth;
     }
 
     body {
@@ -95,6 +100,116 @@
       flex-shrink: 0;
     }
 
+    /* Shimmer: a diagonal light streak that sweeps across the badge on a loop.
+       Achieved with a gradient wider than the element, animated via background-position. */
+    .badge-premium {
+      position: relative;
+      overflow: hidden;
+      background-image: linear-gradient(
+        120deg,
+        transparent 30%,
+        rgba(212, 175, 55, 0.35) 50%,
+        transparent 70%
+      ), linear-gradient(#fffdf5, #fffdf5);
+      background-size: 250% 100%, 100% 100%;
+      background-repeat: no-repeat;
+      animation: shimmer 3s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+      0%   { background-position: 150% 0, 0 0; }
+      100% { background-position: -50% 0, 0 0; }
+    }
+
+    /* Scroll reveal: elements start hidden/offset, JS adds .reveal-visible when they
+       scroll into the viewport (see IntersectionObserver in the script at the bottom). */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .reveal-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Featured hero card */
+    .featured-card {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      align-items: center;
+      background: linear-gradient(135deg, #fff0f7, #f0f9ff);
+      border: 2px solid var(--pink);
+      border-radius: 24px;
+      padding: 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 30px rgba(255, 77, 148, 0.18);
+    }
+
+    .featured-card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      border-radius: 16px;
+      display: block;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .featured-card img.loaded {
+      opacity: 1;
+    }
+
+    /* Skeleton: a gray block shaped like the image, with a lighter band that
+       sweeps across it (background-position animation) to read as "loading"
+       rather than just "gray box". Sits behind the <img> until it loads. */
+    .img-wrap {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .img-skeleton {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, #f3e8f5 25%, #fbe0ee 37%, #f3e8f5 63%);
+      background-size: 400% 100%;
+      animation: skeleton-sweep 1.4s ease infinite;
+    }
+
+    @keyframes skeleton-sweep {
+      0%   { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .featured-ribbon {
+      display: inline-block;
+      background: var(--pink);
+      color: white;
+      font-weight: 700;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+    }
+
+    .featured-card h2 {
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: 700px) {
+      .featured-card {
+        grid-template-columns: 1fr;
+      }
+      .featured-card img {
+        height: 180px;
+      }
+    }
+
     /* Sections */
     section {
       background: var(--card);
@@ -124,14 +239,14 @@
       border: 2px solid #f5d0fe;
       border-radius: 16px;
       padding: 16px;
-      transition: all 0.25s ease;
       background: #fdf4ff;
+      transform-style: preserve-3d;
+      transition: transform 0.15s ease-out, border-color 0.25s ease, box-shadow 0.25s ease;
     }
 
     .product-card:hover {
       border-color: var(--pink);
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(255, 77, 148, 0.15);
+      box-shadow: 0 12px 24px rgba(255, 77, 148, 0.2);
     }
 
     .product-card h3 {
@@ -168,6 +283,63 @@
 
     .qty-control button:hover {
       background: #e11d74;
+    }
+
+    /* Ripple: a circle that expands from the click point and fades out —
+       the classic "material design" tap feedback. Needs the button to be
+       position:relative + overflow:hidden so the ripple is clipped to its shape. */
+    .qty-control button {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.7);
+      transform: scale(0);
+      animation: ripple-expand 0.5s ease-out;
+      pointer-events: none;
+    }
+
+    @keyframes ripple-expand {
+      to {
+        transform: scale(3);
+        opacity: 0;
+      }
+    }
+
+    /* Pop: a quick scale bounce whenever a quantity number changes, so the
+       number itself confirms the click instead of just silently updating. */
+    .qty-display.pop {
+      animation: qty-pop 0.3s ease;
+    }
+
+    @keyframes qty-pop {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.4); color: var(--pink); }
+      100% { transform: scale(1); }
+    }
+
+    .qty-display {
+      display: inline-block;
+    }
+
+    /* Floating +1: a small label that rises and fades above the button on
+       increment — gives a satisfying "your click registered" cue without
+       needing a sound or a popup. */
+    .float-plus {
+      position: absolute;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--pink);
+      pointer-events: none;
+      animation: float-up 0.7s ease-out forwards;
+    }
+
+    @keyframes float-up {
+      0%   { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(-28px); }
     }
 
     .qty-control span {
@@ -390,7 +562,7 @@
 </head>
 <body>
   <header>
-    <h1 style="font-size: 2.7rem; letter-spacing: -1px; text-shadow: 0 3px 12px rgba(0,0,0,0.25);">Kait’s Fruit Pop Shop</h1>
+    <h1 style="font-size: 2.7rem; letter-spacing: -1px; text-shadow: 0 3px 12px rgba(0,0,0,0.25);">Kait’s See-Thru Sweets</h1>
     <p>Candied • Extreme Sour • Frozen Fruit</p>
     <div class="badge">Liberty, TX & surrounding areas</div>
     <br>
@@ -403,15 +575,34 @@
   </header>
 
   <div class="container">
+    <!-- Featured Sample Box -->
+    <div class="featured-card reveal">
+      <div class="img-wrap">
+        <div class="img-skeleton"></div>
+        <img src="https://placehold.co/600x440/ffe4f0/d6336c?text=Fruit+Platter+Photo" alt="Small fruit platter sample box" onload="this.classList.add('loaded'); this.previousElementSibling.style.display='none';">
+      </div>
+      <div>
+        <span class="featured-ribbon">Try us first</span>
+        <h2>$25 Sample Box</h2>
+        <p style="color:#64748b; margin-bottom:10px;">New here? Start with a mix of 4 candied fruits before committing to a full box.</p>
+        <div class="price">$25</div>
+        <div class="qty-control">
+          <button type="button" onclick="bumpQty(event, 'small-test', -1)">−</button>
+          <span class="qty-display" data-id="small-test">0</span>
+          <button type="button" onclick="bumpQty(event, 'small-test', 1)">+</button>
+        </div>
+      </div>
+    </div>
+
     <!-- About -->
-    <section>
+    <section class="reveal">
       <h2>✨ Fresh & Poppin’</h2>
       <p>Made-to-order candied and extreme sour frozen fruit using healthy alternative ingredients (No High Fructose Corn Syrup). Everything is prepared fresh on your pickup day. Orders open for pickup starting <strong>August 10, 2026</strong>.</p>
       <p style="margin-top:10px;"><strong>50% deposit required</strong> to confirm your order (Venmo, Zelle, or Apple Cash).</p>
     </section>
 
     <!-- Single Fruits -->
-    <section>
+    <section class="reveal">
       <h2>🍇 Single Fruit Boxes — $35</h2>
       <p style="margin-bottom:14px; font-size:0.95rem; color:#64748b;">All fruit boxes are frozen & prepared fresh on your pickup day.</p>
       <div class="product-grid" id="singleProducts">
@@ -420,9 +611,9 @@
           <div class="price">$35</div>
           <p style="font-size:0.9rem;color:#64748b;">Classic sweet-tart freeze</p>
           <div class="qty-control">
-            <button type="button" onclick="changeQty('grapes', -1)">−</button>
-            <span id="qty-grapes">0</span>
-            <button type="button" onclick="changeQty('grapes', 1)">+</button>
+            <button type="button" onclick="bumpQty(event, 'grapes', -1)">−</button>
+            <span class="qty-display" data-id="grapes">0</span>
+            <button type="button" onclick="bumpQty(event, 'grapes', 1)">+</button>
           </div>
         </div>
 
@@ -431,9 +622,9 @@
           <div class="price">$35</div>
           <p style="font-size:0.9rem;color:#64748b;">Juicy tropical candy bite</p>
           <div class="qty-control">
-            <button type="button" onclick="changeQty('mango', -1)">−</button>
-            <span id="qty-mango">0</span>
-            <button type="button" onclick="changeQty('mango', 1)">+</button>
+            <button type="button" onclick="bumpQty(event, 'mango', -1)">−</button>
+            <span class="qty-display" data-id="mango">0</span>
+            <button type="button" onclick="bumpQty(event, 'mango', 1)">+</button>
           </div>
         </div>
 
@@ -442,9 +633,9 @@
           <div class="price">$35</div>
           <p style="font-size:0.9rem;color:#64748b;">Bright tangy candy crunch</p>
           <div class="qty-control">
-            <button type="button" onclick="changeQty('pineapple', -1)">−</button>
-            <span id="qty-pineapple">0</span>
-            <button type="button" onclick="changeQty('pineapple', 1)">+</button>
+            <button type="button" onclick="bumpQty(event, 'pineapple', -1)">−</button>
+            <span class="qty-display" data-id="pineapple">0</span>
+            <button type="button" onclick="bumpQty(event, 'pineapple', 1)">+</button>
           </div>
         </div>
 
@@ -453,9 +644,9 @@
           <div class="price">$35</div>
           <p style="font-size:0.9rem;color:#64748b;">Zesty green candy pop</p>
           <div class="qty-control">
-            <button type="button" onclick="changeQty('kiwi', -1)">−</button>
-            <span id="qty-kiwi">0</span>
-            <button type="button" onclick="changeQty('kiwi', 1)">+</button>
+            <button type="button" onclick="bumpQty(event, 'kiwi', -1)">−</button>
+            <span class="qty-display" data-id="kiwi">0</span>
+            <button type="button" onclick="bumpQty(event, 'kiwi', 1)">+</button>
           </div>
         </div>
 
@@ -464,16 +655,16 @@
           <div class="price">$35</div>
           <p style="font-size:0.9rem;color:#64748b;">Mouth-puckering blue sour</p>
           <div class="qty-control">
-            <button type="button" onclick="changeQty('gushers', -1)">−</button>
-            <span id="qty-gushers">0</span>
-            <button type="button" onclick="changeQty('gushers', 1)">+</button>
+            <button type="button" onclick="bumpQty(event, 'gushers', -1)">−</button>
+            <span class="qty-display" data-id="gushers">0</span>
+            <button type="button" onclick="bumpQty(event, 'gushers', 1)">+</button>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Boxes -->
-    <section>
+    <section class="reveal">
       <h2>🎁 Specialty Boxes</h2>
       <div class="product-grid" id="boxProducts">
         <div class="product-card" data-id="small-test" data-name="Small Test Box (Sample)" data-price="25">
@@ -481,9 +672,9 @@
           <div class="price">$25</div>
           <p style="font-size:0.9rem;color:#64748b;">Sample mix of 4 fruits</p>
           <div class="qty-control">
-            <button type="button" onclick="changeQty('small-test', -1)">−</button>
-            <span id="qty-small-test">0</span>
-            <button type="button" onclick="changeQty('small-test', 1)">+</button>
+            <button type="button" onclick="bumpQty(event, 'small-test', -1)">−</button>
+            <span class="qty-display" data-id="small-test">0</span>
+            <button type="button" onclick="bumpQty(event, 'small-test', 1)">+</button>
           </div>
         </div>
 
@@ -492,9 +683,9 @@
           <div class="price">$100</div>
           <p style="font-size:0.9rem;color:#64748b;">Huge sharing box – perfect for groups. Includes 1 of each topping.</p>
           <div class="qty-control">
-            <button type="button" onclick="changeQty('party', -1)">−</button>
-            <span id="qty-party">0</span>
-            <button type="button" onclick="changeQty('party', 1)">+</button>
+            <button type="button" onclick="bumpQty(event, 'party', -1)">−</button>
+            <span class="qty-display" data-id="party">0</span>
+            <button type="button" onclick="bumpQty(event, 'party', 1)">+</button>
           </div>
         </div>
 
@@ -503,9 +694,9 @@
           <div class="price">$45</div>
           <p style="font-size:0.9rem;color:#64748b;">Rainbow inspired candy box</p>
           <div class="qty-control">
-            <button type="button" onclick="changeQty('girl-bday', -1)">−</button>
-            <span id="qty-girl-bday">0</span>
-            <button type="button" onclick="changeQty('girl-bday', 1)">+</button>
+            <button type="button" onclick="bumpQty(event, 'girl-bday', -1)">−</button>
+            <span class="qty-display" data-id="girl-bday">0</span>
+            <button type="button" onclick="bumpQty(event, 'girl-bday', 1)">+</button>
           </div>
         </div>
 
@@ -514,16 +705,16 @@
           <div class="price">$45</div>
           <p style="font-size:0.9rem;color:#64748b;">Blue inspired candy box</p>
           <div class="qty-control">
-            <button type="button" onclick="changeQty('boy-bday', -1)">−</button>
-            <span id="qty-boy-bday">0</span>
-            <button type="button" onclick="changeQty('boy-bday', 1)">+</button>
+            <button type="button" onclick="bumpQty(event, 'boy-bday', -1)">−</button>
+            <span class="qty-display" data-id="boy-bday">0</span>
+            <button type="button" onclick="bumpQty(event, 'boy-bday', 1)">+</button>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Toppings -->
-    <section>
+    <section class="reveal">
       <h2>🔥 Toppings (small container on the side)</h2>
       <div class="topping-list">
         <div class="topping-item">
@@ -564,7 +755,7 @@
     </form>
 
     <!-- Order Form -->
-    <section>
+    <section class="reveal">
       <h2>📅 Place Your Order</h2>
 
       <label for="pickupDate">Preferred Pickup Date <span style="font-weight:400; font-size:0.9rem; color:#64748b;">(No Sunday pickups — must be scheduled 48 hours to 3 months in advance)</span></label>
@@ -603,7 +794,7 @@
           <span class="pay-badge">Apple Cash → 832-873-9324</span>
         </div>
         <p style="font-size:0.9rem; color:#64748b; margin-top:10px;">
-          After submitting, send the deposit and message Kait with your name + pickup date to lock in the order.
+          After submitting, send the deposit and message Kait a screenshot of the payment along with your name + pickup date to lock in the order. Kait will respond shortly to confirm!
         </p>
       </div>
 
@@ -615,7 +806,7 @@
         • Venmo: <a href="https://venmo.com/u/Kdbkatt" target="_blank">@Kdbkatt</a><br>
         • Zelle: Kaitlynbienek@gmail.com<br>
         • Apple Cash: 832-873-9324<br><br>
-        Then message Kait with your name + pickup date to lock in the order.
+        Then message Kait a screenshot of the payment along with your name + pickup date to lock in the order. Kait will respond shortly to confirm!
       </div>
     </section>
   </div>
@@ -643,7 +834,7 @@
         <i class="fa-brands fa-facebook-f"></i>
       </a>
     </div>
-    <p>Kait’s Fruit Pop Shop • Liberty, TX & surrounding areas</p>
+    <p>Kait’s See-Thru Sweets • Liberty, TX & surrounding areas</p>
     <p style="margin-top:6px;"><a href="/refund-policy.html">Refund Policy</a></p>
   </footer>
 
@@ -685,10 +876,71 @@
       'boy-bday': 'Boy Birthday Box'
     };
 
+    // Creates the expanding ripple circle at the exact point the button was clicked
+    function createRipple(event) {
+      const button = event.currentTarget;
+      const rect = button.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      const ripple = document.createElement('span');
+      ripple.className = 'ripple';
+      ripple.style.width = ripple.style.height = size + 'px';
+      ripple.style.left = (event.clientX - rect.left - size / 2) + 'px';
+      ripple.style.top = (event.clientY - rect.top - size / 2) + 'px';
+      button.appendChild(ripple);
+      ripple.addEventListener('animationend', () => ripple.remove());
+    }
+
+    // Shows a small "+1" that floats up and fades above the clicked button
+    function showFloatPlus(event) {
+      const button = event.currentTarget;
+      const rect = button.getBoundingClientRect();
+      const label = document.createElement('span');
+      label.className = 'float-plus';
+      label.textContent = '+1';
+      label.style.left = (rect.left + rect.width / 2 - 8) + 'px';
+      label.style.top = (rect.top - 4) + 'px';
+      label.style.position = 'fixed';
+      document.body.appendChild(label);
+      label.addEventListener('animationend', () => label.remove());
+    }
+
+    // Wraps changeQty with the visual feedback: called from the button's onclick
+    function bumpQty(event, id, delta) {
+      createRipple(event);
+      if (delta > 0) showFloatPlus(event);
+      changeQty(id, delta);
+      document.querySelectorAll('.qty-display[data-id="' + id + '"]').forEach(el => {
+        el.classList.remove('pop');
+        void el.offsetWidth;
+        el.classList.add('pop');
+      });
+    }
+
     function changeQty(id, delta) {
       qty[id] = Math.max(0, qty[id] + delta);
-      document.getElementById('qty-' + id).textContent = qty[id];
+      document.querySelectorAll('.qty-display[data-id="' + id + '"]').forEach(el => {
+        el.textContent = qty[id];
+      });
       updateSummary();
+    }
+
+    // Animates a dollar amount from its current displayed value to a new one,
+    // instead of snapping instantly — small detail, but it reads as "the
+    // total is responding to you" rather than just refreshing.
+    function animateValue(el, newValue) {
+      const oldValue = parseFloat(el.dataset.value || '0');
+      el.dataset.value = newValue;
+      const duration = 300;
+      const start = performance.now();
+
+      function step(now) {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 2);
+        const current = oldValue + (newValue - oldValue) * eased;
+        el.textContent = '$' + current.toFixed(2);
+        if (progress < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
     }
 
     function updateSummary() {
@@ -706,9 +958,9 @@
 
       const deposit = subtotal * 0.5;
 
-      document.getElementById('subtotal').textContent = '$' + subtotal.toFixed(2);
-      document.getElementById('total').textContent = '$' + subtotal.toFixed(2);
-      document.getElementById('deposit').textContent = '$' + deposit.toFixed(2);
+      animateValue(document.getElementById('subtotal'), subtotal);
+      animateValue(document.getElementById('total'), subtotal);
+      animateValue(document.getElementById('deposit'), deposit);
     }
 
     function submitOrder() {
@@ -771,7 +1023,7 @@
       // ---------------------------------
 
       const orderText = `
-🍊 KAIT’S FRUIT POP SHOP ORDER 🍊
+🍊 KAIT’S SEE-THRU SWEETS ORDER 🍊
 
 Name: ${name}
 Phone: ${phone}
@@ -831,6 +1083,37 @@ Then message Kait with your name + pickup date to confirm.
     }
 
     setupPickupDateLimits();
+
+    // Scroll reveal: watches every .reveal element, and once it enters the
+    // viewport, adds .reveal-visible (which the CSS transitions into view).
+    // unobserve() after firing so it doesn't re-trigger every scroll.
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('reveal-visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    // 3D tilt: on mousemove, work out how far the cursor is from the card's
+    // center (as a -1 to 1 ratio on each axis), then rotate the card slightly
+    // toward the cursor using CSS perspective. Resets smoothly on mouseleave.
+    document.querySelectorAll('.product-card').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        const rotateX = (-y * 10).toFixed(2);
+        const rotateY = (x * 10).toFixed(2);
+        card.style.transform = `perspective(500px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.03)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(500px) rotateX(0) rotateY(0) scale(1)';
+      });
+    });
 
     function checkSunday(input) {
       if (!input.value) return;
