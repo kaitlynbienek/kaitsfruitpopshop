@@ -137,6 +137,10 @@
     /* Featured hero carousel: a horizontally-scrollable strip of cards.
        scroll-snap-type makes it "click" into place on each card as you
        scroll, instead of stopping at an awkward halfway point. */
+    .featured-carousel {
+      position: relative;
+    }
+
     .featured-scroll {
       display: flex;
       gap: 14px;
@@ -145,6 +149,7 @@
       -webkit-overflow-scrolling: touch;
       padding-bottom: 6px;
       margin-bottom: 10px;
+      scrollbar-width: thin;
     }
 
     .featured-scroll::-webkit-scrollbar {
@@ -156,8 +161,50 @@
       border-radius: 999px;
     }
 
+    /* Arrow buttons: positioned over the carousel, click to scroll one card
+       at a time. Kept outside the scroll container so they don't scroll away. */
+    .carousel-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: white;
+      color: var(--pink);
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 5;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .carousel-arrow:hover {
+      transform: translateY(-50%) scale(1.08);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.22);
+    }
+
+    .carousel-arrow.prev {
+      left: -6px;
+    }
+
+    .carousel-arrow.next {
+      right: -6px;
+    }
+
+    @media (max-width: 700px) {
+      .carousel-arrow {
+        display: none;
+      }
+    }
+
     .featured-card {
-      flex: 0 0 100%;
+      flex: 0 0 92%;
       scroll-snap-align: start;
       display: grid;
       grid-template-columns: 0.8fr 1fr;
@@ -612,7 +659,10 @@
 
   <div class="container">
     <!-- Featured carousel: Sample Box + limited-time Bundle -->
-    <div class="featured-scroll reveal">
+    <div class="featured-carousel reveal">
+      <button type="button" class="carousel-arrow prev" onclick="scrollFeatured(-1)" aria-label="Previous">‹</button>
+      <button type="button" class="carousel-arrow next" onclick="scrollFeatured(1)" aria-label="Next">›</button>
+      <div class="featured-scroll" id="featuredScroll">
       <div class="featured-card">
         <div class="img-wrap">
           <div class="img-skeleton"></div>
@@ -668,8 +718,9 @@
           </div>
         </div>
       </div>
+      </div>
     </div>
-    <p class="scroll-hint">← Swipe to see the limited-time bundle →</p>
+    <p class="scroll-hint">Use the arrows or swipe to see the limited-time bundle →</p>
 
     <!-- About -->
     <section class="reveal">
@@ -1184,6 +1235,15 @@ Then message Kait with your name + pickup date to confirm.
     }, { threshold: 0.15 });
 
     document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    // Scrolls the featured carousel one card-width left or right when an
+    // arrow button is clicked, instead of relying only on swipe/trackpad.
+    function scrollFeatured(direction) {
+      const container = document.getElementById('featuredScroll');
+      const card = container.querySelector('.featured-card');
+      const cardWidth = card.getBoundingClientRect().width + 14;
+      container.scrollBy({ left: direction * cardWidth, behavior: 'smooth' });
+    }
 
     // 3D tilt: on mousemove, work out how far the cursor is from the card's
     // center (as a -1 to 1 ratio on each axis), then rotate the card slightly
