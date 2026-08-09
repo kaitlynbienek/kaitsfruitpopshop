@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kait’s See-Thru Sweets | Candied & Sour Frozen Fruit</title>
-  <meta name="description" content="Fresh candied and extreme sour frozen fruit made in Liberty, TX. Order for pickup starting August 10th.">
+  <meta name="description" content="Fresh candied and extreme sour frozen fruit made in Liberty, TX. Pre-order now for contactless porch pickup.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍇</text></svg>">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
@@ -501,6 +501,28 @@
       resize: vertical;
     }
 
+    /* Time slot buttons: shown only after a pickup date is chosen */
+    .time-slot {
+      padding: 8px 14px;
+      border: 2px solid #e9d5ff;
+      border-radius: 999px;
+      background: white;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .time-slot:hover {
+      border-color: var(--pink);
+    }
+
+    .time-slot.selected {
+      background: var(--pink);
+      border-color: var(--pink);
+      color: white;
+    }
+
     /* Order Summary */
     .summary-box {
       background: linear-gradient(135deg, #fdf4ff, #f0f9ff);
@@ -731,8 +753,9 @@
 
     <!-- About -->
     <section class="reveal">
-      <h2>✨ Fresh & Poppin’</h2>
-      <p>Made-to-order candied and extreme sour frozen fruit using healthy alternative ingredients (No High Fructose Corn Syrup). Everything is prepared fresh on your pickup day. Orders open for pickup starting <strong>August 10, 2026</strong>.</p>
+      <h2>✨ Pick-up Only</h2>
+      <p>Made-to-order candied and extreme sour frozen fruit using healthy alternative ingredients (No High Fructose Corn Syrup). Everything is prepared fresh on your pickup day. <strong>Pre-order now!</strong></p>
+      <p style="margin-top:10px;">Pickup is contactless porch pickup — you're welcome to knock if you have questions!</p>
       <p style="margin-top:10px;"><strong>50% deposit required</strong> to confirm your order (Venmo, Zelle, or Apple Cash).</p>
     </section>
 
@@ -784,17 +807,6 @@
             <button type="button" onclick="bumpQty(event, 'kiwi', 1)">+</button>
           </div>
         </div>
-
-        <div class="product-card" data-id="gushers" data-name="Blue Extreme Sour Gushers" data-price="35">
-          <h3>Blue Extreme Sour Gushers</h3>
-          <div class="price">$35</div>
-          <p style="font-size:0.9rem;color:#64748b;">Mouth-puckering blue sour</p>
-          <div class="qty-control">
-            <button type="button" onclick="bumpQty(event, 'gushers', -1)">−</button>
-            <span class="qty-display" data-id="gushers">0</span>
-            <button type="button" onclick="bumpQty(event, 'gushers', 1)">+</button>
-          </div>
-        </div>
       </div>
     </section>
 
@@ -813,6 +825,17 @@
           </div>
         </div>
 
+        <div class="product-card" data-id="gushers" data-name="Blue Extreme Sour Gushers" data-price="15">
+          <h3>Blue Extreme Sour Gushers</h3>
+          <div class="price">$15</div>
+          <p style="font-size:0.9rem;color:#64748b;">Mouth-puckering blue sour • 1/2 pint</p>
+          <div class="qty-control">
+            <button type="button" onclick="bumpQty(event, 'gushers', -1)">−</button>
+            <span class="qty-display" data-id="gushers">0</span>
+            <button type="button" onclick="bumpQty(event, 'gushers', 1)">+</button>
+          </div>
+        </div>
+
         <div class="product-card" data-id="party" data-name="Party Test Box" data-price="100">
           <h3>Party Test Box</h3>
           <div class="price">$100</div>
@@ -824,9 +847,9 @@
           </div>
         </div>
 
-        <div class="product-card" data-id="girl-bday" data-name="Girl Birthday Box" data-price="45">
+        <div class="product-card" data-id="girl-bday" data-name="Girl Birthday Box" data-price="50">
           <h3>Girl Birthday Box</h3>
-          <div class="price">$45</div>
+          <div class="price">$50</div>
           <p style="font-size:0.9rem;color:#64748b;">Rainbow inspired candy box</p>
           <div class="qty-control">
             <button type="button" onclick="bumpQty(event, 'girl-bday', -1)">−</button>
@@ -835,9 +858,9 @@
           </div>
         </div>
 
-        <div class="product-card" data-id="boy-bday" data-name="Boy Birthday Box" data-price="45">
+        <div class="product-card" data-id="boy-bday" data-name="Boy Birthday Box" data-price="50">
           <h3>Boy Birthday Box</h3>
-          <div class="price">$45</div>
+          <div class="price">$50</div>
           <p style="font-size:0.9rem;color:#64748b;">Blue inspired candy box</p>
           <div class="qty-control">
             <button type="button" onclick="bumpQty(event, 'boy-bday', -1)">−</button>
@@ -858,9 +881,9 @@
           <span class="topping-price">+$4</span>
         </div>
         <div class="topping-item">
-          <input type="checkbox" id="top-poprocks" data-name="Pop Rocks" data-price="4" onchange="updateSummary()">
+          <input type="checkbox" id="top-poprocks" data-name="Pop Rocks" data-price="3" onchange="updateSummary()">
           <label for="top-poprocks">Pop Rocks</label>
-          <span class="topping-price">+$4</span>
+          <span class="topping-price">+$3</span>
         </div>
         <div class="topping-item">
           <input type="checkbox" id="top-powder" data-name="Extra Sour Powder" data-price="3" onchange="updateSummary()">
@@ -873,9 +896,14 @@
           <span class="topping-price">+$3</span>
         </div>
         <div class="topping-item">
-          <input type="checkbox" id="top-rollups" data-name="Fruit Roll-Up on half the order" data-price="6" onchange="updateSummary()">
-          <label for="top-rollups">Fruit Roll-Up on half the order</label>
-          <span class="topping-price">+$6</span>
+          <input type="checkbox" id="top-rollup-half" data-name="Fruit Roll-Up Half the Order" data-price="5" onchange="updateSummary()">
+          <label for="top-rollup-half">Fruit Roll-Up Half the Order</label>
+          <span class="topping-price">+$5</span>
+        </div>
+        <div class="topping-item">
+          <input type="checkbox" id="top-sour-half" data-name="Extreme Sour Half the Order" data-price="5" onchange="updateSummary()">
+          <label for="top-sour-half">Extreme Sour Half the Order</label>
+          <span class="topping-price">+$5</span>
         </div>
       </div>
     </section>
@@ -893,8 +921,13 @@
     <section class="reveal">
       <h2>📅 Place Your Order</h2>
 
-      <label for="pickupDate">Preferred Pickup Date <span style="font-weight:400; font-size:0.9rem; color:#64748b;">(No Sunday pickups — must be scheduled 48 hours to 3 months in advance)</span></label>
-      <input type="date" id="pickupDate" required onchange="checkSunday(this); updateSummary()">
+      <label for="pickupDate">Preferred Pickup Date</label>
+      <input type="date" id="pickupDate" required onchange="handleDateChange(this)">
+
+      <div id="timeSlotWrap" style="display:none; margin-bottom:16px;">
+        <label>Pickup Time</label>
+        <div id="timeSlots" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+      </div>
 
       <label for="customerName">Your Name</label>
       <input type="text" id="customerName" placeholder="First & last name" required>
@@ -930,6 +963,9 @@
         </div>
         <p style="font-size:0.9rem; color:#64748b; margin-top:10px;">
           After submitting, send the deposit and message Kait a screenshot of the payment along with your name + pickup date to lock in the order. Kait will respond shortly to confirm!
+        </p>
+        <p style="font-size:0.85rem; margin-top:8px;">
+          <a href="/disclaimer.html" style="color:var(--pink); font-weight:600;">Please read our payment disclaimer</a>
         </p>
       </div>
 
@@ -970,7 +1006,7 @@
       </a>
     </div>
     <p>Kait’s See-Thru Sweets • Liberty, TX & surrounding areas</p>
-    <p style="margin-top:6px;"><a href="/refund-policy.html">Refund Policy</a></p>
+    <p style="margin-top:6px;"><a href="/refund-policy.html">Refund Policy</a> &nbsp;•&nbsp; <a href="/disclaimer.html">Disclaimer</a></p>
   </footer>
 
   <script>
@@ -993,11 +1029,11 @@
       mango: 35,
       pineapple: 35,
       kiwi: 35,
-      gushers: 35,
+      gushers: 15,
       'small-test': 25,
       party: 100,
-      'girl-bday': 45,
-      'boy-bday': 45,
+      'girl-bday': 50,
+      'boy-bday': 50,
       bundle: 50
     };
 
@@ -1108,7 +1144,11 @@
       const notes = document.getElementById('specialRequests').value.trim();
 
       if (!date) {
-        alert('Please choose a pickup date (48 hours to 3 months from today).');
+        alert('Please choose a pickup date.');
+        return;
+      }
+      if (!selectedPickupTime) {
+        alert('Please choose a pickup time.');
         return;
       }
       if (!name || !phone) {
@@ -1150,7 +1190,7 @@
       formData.append("form-name", "fruit-orders");
       formData.append("name", name);
       formData.append("phone", phone);
-      formData.append("pickup_date", date);
+      formData.append("pickup_date", date + ' ' + selectedPickupTime);
       formData.append("order_details", orderItemsText);
       formData.append("special_requests", notes || "None");
 
@@ -1173,6 +1213,7 @@
 Name: ${name}
 Phone: ${phone}
 Pickup Date: ${date}
+Pickup Time: ${selectedPickupTime}
 
 ITEMS:
 ${orderLines.join('\n')}
@@ -1206,28 +1247,87 @@ Then message Kait with your name + pickup date to confirm.
       document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
     }
 
-    // Pickup date window: 48 hours from now through 3 months from now
+    // Pickup date window: blocks today + tomorrow, allows up to 3 months out.
+    // Enforced silently via the date input's min/max — no on-screen text needed.
+    function toISODate(d) {
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
     function setupPickupDateLimits() {
       const dateInput = document.getElementById('pickupDate');
-
       const now = new Date();
+      now.setHours(0, 0, 0, 0);
 
-      const minDate = new Date(now.getTime() + 48 * 60 * 60 * 1000);
+      const minDate = new Date(now);
+      minDate.setDate(minDate.getDate() + 2); // blocks today and tomorrow
       const maxDate = new Date(now);
       maxDate.setMonth(maxDate.getMonth() + 3);
-
-      const toISODate = (d) => {
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-      };
 
       dateInput.min = toISODate(minDate);
       dateInput.max = toISODate(maxDate);
     }
 
     setupPickupDateLimits();
+
+    let selectedPickupTime = null;
+
+    function formatHour(h) {
+      const period = h >= 12 ? 'PM' : 'AM';
+      let hour12 = h % 12;
+      if (hour12 === 0) hour12 = 12;
+      return hour12 + ':00 ' + period;
+    }
+
+    // Fires only on a real user date selection (never on page load), so it
+    // can't pop an alert before the customer has actually picked anything.
+    function handleDateChange(input) {
+      selectedPickupTime = null;
+      const wrap = document.getElementById('timeSlotWrap');
+      const slotsContainer = document.getElementById('timeSlots');
+      slotsContainer.innerHTML = '';
+
+      if (!input.value) {
+        wrap.style.display = 'none';
+        return;
+      }
+
+      // Parse as local date components (not new Date(string)) to avoid
+      // timezone off-by-one-day bugs on mobile browsers.
+      const [y, m, d] = input.value.split('-').map(Number);
+      const picked = new Date(y, m - 1, d);
+      const day = picked.getDay(); // 0 = Sunday
+
+      if (day === 0) {
+        alert('Sorry, we do not offer Sunday pickups. Please choose Monday–Saturday.');
+        input.value = '';
+        wrap.style.display = 'none';
+        return;
+      }
+
+      // Mon–Thu: 12pm–8pm hourly. Fri–Sat: 12pm–9pm hourly.
+      const hours = (day >= 1 && day <= 4)
+        ? [12, 13, 14, 15, 16, 17, 18, 19, 20]
+        : [12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
+
+      hours.forEach(h => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'time-slot';
+        btn.textContent = formatHour(h);
+        btn.onclick = () => {
+          document.querySelectorAll('.time-slot').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          selectedPickupTime = formatHour(h);
+        };
+        slotsContainer.appendChild(btn);
+      });
+
+      wrap.style.display = 'block';
+      updateSummary();
+    }
 
     // Scroll reveal: watches every .reveal element, and once it enters the
     // viewport, adds .reveal-visible (which the CSS transitions into view).
@@ -1271,19 +1371,7 @@ Then message Kait with your name + pickup date to confirm.
       });
     });
 
-    function checkSunday(input) {
-      if (!input.value) return;
-      const day = new Date(input.value + 'T12:00:00').getDay(); // 0 = Sunday
-      if (day === 0) {
-        alert('Sorry, we do not offer Sunday pickups. Please choose another day.');
-        input.value = '';
-        return;
-      }
-      if (input.value < input.min || input.value > input.max) {
-        alert('Pickup dates must be scheduled between 48 hours and 3 months from today.');
-        input.value = '';
-      }
-    }
+    
   </script>
 </body>
 </html>
