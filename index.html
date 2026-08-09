@@ -257,10 +257,72 @@
       margin-bottom: 4px;
     }
 
+    /* Custom-styled dropdowns for the Bundle card: removes the native
+       browser look (that "Word doc" gray box) in favor of a rounded pink
+       pill with a custom arrow icon, animated border glow on focus, and a
+       little bounce when a selection is made. */
     .featured-card select {
-      margin-bottom: 8px;
-      padding: 8px 10px;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 10px 36px 10px 14px;
       font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--dark);
+      background-color: #fff;
+      background-image: linear-gradient(135deg, #fff, #fff0f7);
+      border: 2px solid #f5b8d6;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+      box-shadow: 0 2px 8px rgba(255, 77, 148, 0.1);
+
+      /* Custom dropdown arrow, drawn in CSS instead of relying on the
+         browser's default (which is what made it look plain/gray). */
+      background-image:
+        linear-gradient(135deg, #fff, #fff0f7),
+        linear-gradient(45deg, transparent 50%, var(--pink) 50%),
+        linear-gradient(135deg, var(--pink) 50%, transparent 50%);
+      background-position:
+        0 0,
+        calc(100% - 20px) center,
+        calc(100% - 15px) center;
+      background-size:
+        100% 100%,
+        6px 6px,
+        6px 6px;
+      background-repeat: no-repeat;
+    }
+
+    .featured-card select:hover {
+      border-color: var(--pink);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(255, 77, 148, 0.2);
+    }
+
+    .featured-card select:focus {
+      outline: none;
+      border-color: var(--pink);
+      box-shadow: 0 0 0 4px rgba(255, 77, 148, 0.18);
+      animation: select-pulse 1.2s ease-in-out infinite;
+    }
+
+    @keyframes select-pulse {
+      0%, 100% { box-shadow: 0 0 0 4px rgba(255, 77, 148, 0.18); }
+      50%      { box-shadow: 0 0 0 7px rgba(255, 77, 148, 0.1); }
+    }
+
+    /* Little bounce whenever the selected value actually changes */
+    .featured-card select.bounce {
+      animation: select-bounce 0.3s ease;
+    }
+
+    @keyframes select-bounce {
+      0%   { transform: scale(1); }
+      40%  { transform: scale(1.04); }
+      100% { transform: scale(1); }
     }
 
     .carousel-dots {
@@ -735,9 +797,7 @@
             <option value="Extra Sour Powder">Topping: Extra Sour Powder</option>
             <option value="Signature Sour Dip">Topping: Signature Sour Dip</option>
           </select>
-          <div class="price">$50</div>
-          <div class="qty-control">
-            <button type="button" onclick="bumpQty(event, 'bundle', -1)">−</button>
+          <div class="price">$40</div>
             <span class="qty-display" data-id="bundle">0</span>
             <button type="button" onclick="bumpQty(event, 'bundle', 1)">+</button>
           </div>
@@ -754,7 +814,7 @@
     <!-- About -->
     <section class="reveal">
       <h2>✨ Pick-up Only</h2>
-      <p>Made-to-order candied and extreme sour frozen fruit using healthy alternative ingredients (No High Fructose Corn Syrup). Everything is prepared fresh on your pickup day. <strong>Pre-order now!</strong></p>
+      <p>Made-to-order candied and extreme sour frozen fruit using healthy alternative ingredients (No High Fructose Corn Syrup). Everything is prepared fresh on your pickup day. <strong>Pre-order today!</strong></p>
       <p style="margin-top:10px;">Pickup is contactless porch pickup — you're welcome to knock if you have questions!</p>
       <p style="margin-top:10px;"><strong>50% deposit required</strong> to confirm your order (Venmo, Zelle, or Apple Cash).</p>
     </section>
@@ -1034,7 +1094,7 @@
       party: 100,
       'girl-bday': 50,
       'boy-bday': 50,
-      bundle: 50
+      bundle: 40
     };
 
     const names = {
@@ -1294,6 +1354,22 @@ Then message Kait with your name + pickup date to confirm.
         return;
       }
 
+      // Some mobile browsers let a date be typed/picked outside the native
+      // min/max even though it's set — so we double-check here in JS rather
+      // than trusting the input attribute alone.
+      if (input.value < input.min) {
+        alert('Unavailable date: please select a date at least 48 hours out, or contact us directly for a rush order.');
+        input.value = '';
+        wrap.style.display = 'none';
+        return;
+      }
+      if (input.value > input.max) {
+        alert('Please select an earlier date, or contact us directly for a later pickup.');
+        input.value = '';
+        wrap.style.display = 'none';
+        return;
+      }
+
       // Parse as local date components (not new Date(string)) to avoid
       // timezone off-by-one-day bugs on mobile browsers.
       const [y, m, d] = input.value.split('-').map(Number);
@@ -1301,7 +1377,7 @@ Then message Kait with your name + pickup date to confirm.
       const day = picked.getDay(); // 0 = Sunday
 
       if (day === 0) {
-        alert('Sorry, we do not offer Sunday pickups. Please choose Monday–Saturday.');
+        alert('No available times: we do not offer Sunday pickups. Please choose Monday–Saturday.');
         input.value = '';
         wrap.style.display = 'none';
         return;
@@ -1353,6 +1429,15 @@ Then message Kait with your name + pickup date to confirm.
         dot.classList.toggle('active', i == index);
       });
     }
+
+    // Small bounce whenever a bundle dropdown selection changes
+    document.querySelectorAll('.featured-card select').forEach(select => {
+      select.addEventListener('change', () => {
+        select.classList.remove('bounce');
+        void select.offsetWidth;
+        select.classList.add('bounce');
+      });
+    });
 
     // 3D tilt: on mousemove, work out how far the cursor is from the card's
     // center (as a -1 to 1 ratio on each axis), then rotate the card slightly
