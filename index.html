@@ -744,6 +744,11 @@
     </div>
   </header>
 
+  <a href="cart.html" id="cartButton" style="position:fixed; bottom:20px; right:20px; z-index:50; display:none; align-items:center; gap:8px; background:linear-gradient(135deg, var(--pink), var(--purple)); color:white; text-decoration:none; font-weight:700; padding:12px 18px; border-radius:999px; box-shadow:0 6px 20px rgba(255,77,148,0.4);">
+    <i class="fa-solid fa-cart-shopping"></i>
+    <span id="cartCount">0</span> in cart
+  </a>
+
   <div class="container">
     <!-- Featured slider: Sample Box + limited-time Bundle -->
     <div class="featured-carousel reveal">
@@ -798,6 +803,8 @@
             <option value="Signature Sour Dip">Topping: Signature Sour Dip</option>
           </select>
           <div class="price">$40</div>
+          <div class="qty-control">
+            <button type="button" onclick="bumpQty(event, 'bundle', -1)">−</button>
             <span class="qty-display" data-id="bundle">0</span>
             <button type="button" onclick="bumpQty(event, 'bundle', 1)">+</button>
           </div>
@@ -978,7 +985,7 @@
     </form>
 
     <!-- Order Form -->
-    <section class="reveal">
+    <section class="reveal" id="order-form">
       <h2>📅 Place Your Order</h2>
 
       <label for="pickupDate">Preferred Pickup Date</label>
@@ -1195,6 +1202,70 @@
       animateValue(document.getElementById('subtotal'), subtotal);
       animateValue(document.getElementById('total'), subtotal);
       animateValue(document.getElementById('deposit'), deposit);
+
+      saveCart();
+    }
+
+    // Persists the current selections (products, toppings, bundle picks) to
+    // localStorage, so the cart page (and a return visit) sees the same cart.
+    function saveCart() {
+      const toppings = Array.from(document.querySelectorAll('.topping-item input:checked'))
+        .map(cb => ({ name: cb.dataset.name, price: parseFloat(cb.dataset.price) }));
+
+      const cart = {
+        qty: qty,
+        toppings: toppings,
+        bundleFruit1: document.getElementById('bundle-fruit1') ? document.getElementById('bundle-fruit1').value : null,
+        bundleFruit2: document.getElementById('bundle-fruit2') ? document.getElementById('bundle-fruit2').value : null,
+        bundleTopping: document.getElementById('bundle-topping') ? document.getElementById('bundle-topping').value : null
+      };
+      localStorage.setItem('kaitsCart', JSON.stringify(cart));
+      updateCartButton();
+    }
+
+    // Restores selections from localStorage on page load, so items added
+    // earlier (or on the cart page) are still there.
+    function loadCart() {
+      const saved = localStorage.getItem('kaitsCart');
+      if (!saved) {
+        updateCartButton();
+        return;
+      }
+      try {
+        const cart = JSON.parse(saved);
+        for (let id in cart.qty) {
+          if (id in qty) {
+            qty[id] = cart.qty[id];
+            document.querySelectorAll('.qty-display[data-id="' + id + '"]').forEach(el => {
+              el.textContent = qty[id];
+            });
+          }
+        }
+        (cart.toppings || []).forEach(t => {
+          document.querySelectorAll('.topping-item input').forEach(cb => {
+            if (cb.dataset.name === t.name) cb.checked = true;
+          });
+        });
+        if (cart.bundleFruit1) document.getElementById('bundle-fruit1').value = cart.bundleFruit1;
+        if (cart.bundleFruit2) document.getElementById('bundle-fruit2').value = cart.bundleFruit2;
+        if (cart.bundleTopping) document.getElementById('bundle-topping').value = cart.bundleTopping;
+      } catch (e) {
+        console.error('Could not restore cart:', e);
+      }
+      updateCartButton();
+    }
+
+    // Shows/hides the floating cart button and keeps its item count current
+    function updateCartButton() {
+      const totalItems = Object.values(qty).reduce((sum, n) => sum + n, 0);
+      const btn = document.getElementById('cartButton');
+      const countEl = document.getElementById('cartCount');
+      if (totalItems > 0) {
+        btn.style.display = 'flex';
+        countEl.textContent = totalItems;
+      } else {
+        btn.style.display = 'none';
+      }
     }
 
     function submitOrder() {
@@ -1331,6 +1402,7 @@ Then message Kait with your name + pickup date to confirm.
     }
 
     setupPickupDateLimits();
+    loadCart();
 
     let selectedPickupTime = null;
 
@@ -1430,12 +1502,14 @@ Then message Kait with your name + pickup date to confirm.
       });
     }
 
-    // Small bounce whenever a bundle dropdown selection changes
+    // Small bounce whenever a bundle dropdown selection changes, and keep
+    // the saved cart in sync with the new selection
     document.querySelectorAll('.featured-card select').forEach(select => {
       select.addEventListener('change', () => {
         select.classList.remove('bounce');
         void select.offsetWidth;
         select.classList.add('bounce');
+        saveCart();
       });
     });
 

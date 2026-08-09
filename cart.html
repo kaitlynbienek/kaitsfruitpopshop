@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Cart | Kait's See-Thru Sweets</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍇</text></svg>">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  :root {
+    --pink: #ff4d94;
+    --purple: #c084fc;
+    --dark: #1e1b4b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: linear-gradient(135deg, #fdf4ff 0%, #e0f2fe 50%, #fce7f3 100%);
+    color: var(--dark);
+    line-height: 1.5;
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+  header {
+    text-align: center;
+    padding: 30px 16px 24px;
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    color: white;
+    border-radius: 0 0 24px 24px;
+    box-shadow: 0 10px 30px rgba(255, 77, 148, 0.3);
+    margin-bottom: 24px;
+  }
+  header h1 { font-size: 1.8rem; font-weight: 800; }
+  header a {
+    color: white;
+    text-decoration: none;
+    font-size: 0.9rem;
+    opacity: 0.9;
+    display: inline-block;
+    margin-top: 8px;
+  }
+  .container { max-width: 700px; margin: 0 auto; padding: 0 16px; }
+  .cart-item {
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  }
+  .cart-item h3 { font-size: 1.05rem; margin-bottom: 4px; }
+  .cart-item .details { font-size: 0.85rem; color: #64748b; }
+  .cart-item .line-price { font-weight: 700; color: var(--pink); white-space: nowrap; margin-left: 12px; }
+  .qty-control { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+  .qty-control button {
+    width: 28px; height: 28px; border: none; border-radius: 50%;
+    background: var(--pink); color: white; font-size: 1rem; font-weight: bold; cursor: pointer;
+  }
+  .qty-control span { font-weight: 700; min-width: 18px; text-align: center; }
+  .remove-btn {
+    background: none; border: none; color: #c53030; font-size: 0.8rem;
+    text-decoration: underline; cursor: pointer; margin-top: 6px;
+  }
+  .summary-box {
+    background: linear-gradient(135deg, #fdf4ff, #f0f9ff);
+    border: 2px solid var(--pink);
+    border-radius: 16px;
+    padding: 20px;
+    margin: 20px 0;
+  }
+  .summary-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 1.05rem; }
+  .summary-row.total { font-size: 1.3rem; font-weight: 800; color: var(--pink); border-top: 2px dashed #f9a8d4; padding-top: 12px; margin-top: 12px; }
+  .summary-row.deposit { font-size: 1.15rem; font-weight: 700; color: #15803d; background: #dcfce7; padding: 10px 14px; border-radius: 10px; margin-top: 8px; }
+  .btn {
+    display: block;
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+    color: white; font-weight: 700; font-size: 1.1rem;
+    padding: 16px; border: none; border-radius: 999px;
+    cursor: pointer; width: 100%; text-align: center;
+    text-decoration: none;
+    box-shadow: 0 6px 20px rgba(255, 77, 148, 0.35);
+  }
+  .btn-secondary {
+    display: block;
+    text-align: center;
+    color: var(--pink);
+    font-weight: 600;
+    margin-top: 14px;
+    text-decoration: none;
+  }
+  #emptyState { text-align: center; padding: 60px 20px; color: #64748b; }
+  #emptyState i { font-size: 3rem; color: #f5b8d6; margin-bottom: 16px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🛒 Your Cart</h1>
+  <a href="index.html">&larr; Continue Shopping</a>
+</header>
+
+<div class="container">
+  <div id="cartItems"></div>
+
+  <div id="emptyState" style="display:none;">
+    <i class="fa-solid fa-basket-shopping"></i>
+    <p>Your cart is empty.</p>
+    <a href="index.html" class="btn-secondary">Start shopping →</a>
+  </div>
+
+  <div id="summarySection" style="display:none;">
+    <div class="summary-box">
+      <div class="summary-row">
+        <span>Subtotal</span>
+        <span id="subtotal">$0.00</span>
+      </div>
+      <div class="summary-row deposit">
+        <span>50% Deposit Due Now</span>
+        <span id="deposit">$0.00</span>
+      </div>
+    </div>
+
+    <a href="index.html#order-form" class="btn">Continue to Checkout</a>
+    <a href="index.html" class="btn-secondary">Add more items</a>
+  </div>
+</div>
+
+<script>
+  const prices = {
+    grapes: 35, mango: 35, pineapple: 35, kiwi: 35, gushers: 15,
+    'small-test': 25, party: 100, 'girl-bday': 50, 'boy-bday': 50, bundle: 40
+  };
+  const names = {
+    grapes: 'Candied Grapes', mango: 'Candied Mango', pineapple: 'Candied Pineapple',
+    kiwi: 'Candied Kiwi', gushers: 'Blue Extreme Sour Gushers (1/2 pint)',
+    'small-test': 'Small Test Box (Sample)', party: 'Party Test Box',
+    'girl-bday': 'Girl Birthday Box', 'boy-bday': 'Boy Birthday Box', bundle: 'Build a Bundle'
+  };
+
+  function loadCartData() {
+    const saved = localStorage.getItem('kaitsCart');
+    if (!saved) return { qty: {}, toppings: [] };
+    try {
+      return JSON.parse(saved);
+    } catch (e) {
+      return { qty: {}, toppings: [] };
+    }
+  }
+
+  function saveCartData(cart) {
+    localStorage.setItem('kaitsCart', JSON.stringify(cart));
+  }
+
+  function render() {
+    const cart = loadCartData();
+    const itemsEl = document.getElementById('cartItems');
+    const emptyEl = document.getElementById('emptyState');
+    const summaryEl = document.getElementById('summarySection');
+    itemsEl.innerHTML = '';
+
+    let subtotal = 0;
+    let hasItems = false;
+
+    for (let id in prices) {
+      const q = cart.qty && cart.qty[id] ? cart.qty[id] : 0;
+      if (q <= 0) continue;
+      hasItems = true;
+      const lineTotal = q * prices[id];
+      subtotal += lineTotal;
+
+      const row = document.createElement('div');
+      row.className = 'cart-item';
+
+      let detailsHtml = '';
+      if (id === 'bundle' && cart.bundleFruit1) {
+        detailsHtml = `<div class="details">${cart.bundleFruit1} + ${cart.bundleFruit2} + ${cart.bundleTopping}</div>`;
+      }
+
+      row.innerHTML = `
+        <div>
+          <h3>${names[id]}</h3>
+          ${detailsHtml}
+          <div class="qty-control">
+            <button type="button" onclick="adjustQty('${id}', -1)">−</button>
+            <span>${q}</span>
+            <button type="button" onclick="adjustQty('${id}', 1)">+</button>
+          </div>
+          <button type="button" class="remove-btn" onclick="removeItem('${id}')">Remove</button>
+        </div>
+        <div class="line-price">$${lineTotal.toFixed(2)}</div>
+      `;
+      itemsEl.appendChild(row);
+    }
+
+    // Toppings
+    (cart.toppings || []).forEach((t, i) => {
+      hasItems = true;
+      subtotal += t.price;
+      const row = document.createElement('div');
+      row.className = 'cart-item';
+      row.innerHTML = `
+        <div>
+          <h3>${t.name}</h3>
+          <div class="details">Topping add-on</div>
+          <button type="button" class="remove-btn" onclick="removeTopping(${i})">Remove</button>
+        </div>
+        <div class="line-price">$${t.price.toFixed(2)}</div>
+      `;
+      itemsEl.appendChild(row);
+    });
+
+    if (!hasItems) {
+      emptyEl.style.display = 'block';
+      summaryEl.style.display = 'none';
+      return;
+    }
+
+    emptyEl.style.display = 'none';
+    summaryEl.style.display = 'block';
+    document.getElementById('subtotal').textContent = '$' + subtotal.toFixed(2);
+    document.getElementById('deposit').textContent = '$' + (subtotal * 0.5).toFixed(2);
+  }
+
+  function adjustQty(id, delta) {
+    const cart = loadCartData();
+    if (!cart.qty) cart.qty = {};
+    cart.qty[id] = Math.max(0, (cart.qty[id] || 0) + delta);
+    saveCartData(cart);
+    render();
+  }
+
+  function removeItem(id) {
+    const cart = loadCartData();
+    if (!cart.qty) cart.qty = {};
+    cart.qty[id] = 0;
+    saveCartData(cart);
+    render();
+  }
+
+  function removeTopping(index) {
+    const cart = loadCartData();
+    if (cart.toppings) cart.toppings.splice(index, 1);
+    saveCartData(cart);
+    render();
+  }
+
+  render();
+</script>
+
+</body>
+</html>
