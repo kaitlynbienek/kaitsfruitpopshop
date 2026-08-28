@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kait’s See-Thru Sweets | Candied & Sour Frozen Fruit</title>
+  <title>Kait’s Fruit Pop Shop | Candied & Sour Frozen Fruit</title>
   <meta name="description" content="Fresh candied and extreme sour frozen fruit made in Liberty, TX. Pre-order now for contactless porch pickup.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍇</text></svg>">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -732,7 +732,7 @@
 </head>
 <body>
   <header>
-    <h1 style="font-size: 2.7rem; letter-spacing: -1px; text-shadow: 0 3px 12px rgba(0,0,0,0.25);">Kait’s See-Thru Sweets</h1>
+    <h1 style="font-size: 2.7rem; letter-spacing: -1px; text-shadow: 0 3px 12px rgba(0,0,0,0.25);">Kait’s Fruit Pop Shop</h1>
     <p>Candied • Extreme Sour • Frozen Fruit</p>
     <div class="badge">Liberty, TX & surrounding areas</div>
     <br>
@@ -975,15 +975,6 @@
       </div>
     </section>
 
-    <!-- Hidden form for Netlify detection -->
-    <form name="fruit-orders" data-netlify="true" hidden>
-      <input type="text" name="name">
-      <input type="tel" name="phone">
-      <input type="date" name="pickup_date">
-      <textarea name="order_details"></textarea>
-      <textarea name="special_requests"></textarea>
-    </form>
-
     <!-- Order Form -->
     <section class="reveal" id="order-form">
       <h2>📅 Place Your Order</h2>
@@ -1072,7 +1063,7 @@
         <i class="fa-brands fa-facebook-f"></i>
       </a>
     </div>
-    <p>Kait’s See-Thru Sweets • Liberty, TX & surrounding areas</p>
+    <p>Kait’s Fruit Pop Shop • Liberty, TX & surrounding areas</p>
     <p style="margin-top:6px;"><a href="/refund-policy.html">Refund Policy</a> &nbsp;•&nbsp; <a href="/disclaimer.html">Disclaimer</a></p>
   </footer>
 
@@ -1316,30 +1307,37 @@
 
       const orderItemsText = orderLines.join('\n');
 
-      // --- NEW: Send Data to Netlify ---
-      const formData = new URLSearchParams();
-      formData.append("form-name", "fruit-orders");
-      formData.append("name", name);
-      formData.append("phone", phone);
-      formData.append("pickup_date", date + ' ' + selectedPickupTime);
-      formData.append("order_details", orderItemsText);
-      formData.append("special_requests", notes || "None");
-
-      fetch("/", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: formData.toString(),
+      // Sends the order to splitforms — emails Kait AND stores it in the
+      // splitforms dashboard as a backup in case the email is missed.
+      fetch('https://splitforms.com/api/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          access_key: 'e4e782859f5348eba7269c5385868409',
+          subject: 'New Order — Kait\'s Fruit Pop Shop',
+          name: name,
+          phone: phone,
+          pickup_date: date,
+          pickup_time: selectedPickupTime,
+          order_details: orderItemsText,
+          special_requests: notes || 'None',
+          subtotal: '$' + subtotal.toFixed(2),
+          deposit_due: '$' + deposit.toFixed(2)
+        })
       })
-      .then(() => {
-        console.log("Order successfully saved to Netlify!");
+      .then(res => res.json())
+      .then(data => {
+        console.log('Order sent to splitforms:', data);
       })
-      .catch((error) => {
-        console.error("Netlify submission error:", error);
+      .catch(error => {
+        console.error('splitforms submission error:', error);
       });
-      // ---------------------------------
 
       const orderText = `
-🍊 KAIT’S SEE-THRU SWEETS ORDER 🍊
+🍊 KAIT’S FRUIT POP SHOP ORDER 🍊
 
 Name: ${name}
 Phone: ${phone}
@@ -1406,11 +1404,14 @@ Then message Kait with your name + pickup date to confirm.
 
     let selectedPickupTime = null;
 
-    function formatHour(h) {
+    // Formats a time given as total minutes since midnight, e.g. 750 -> "12:30 PM"
+    function formatTime(totalMinutes) {
+      let h = Math.floor(totalMinutes / 60);
+      let mins = totalMinutes % 60;
       const period = h >= 12 ? 'PM' : 'AM';
       let hour12 = h % 12;
       if (hour12 === 0) hour12 = 12;
-      return hour12 + ':00 ' + period;
+      return hour12 + ':' + String(mins).padStart(2, '0') + ' ' + period;
     }
 
     // Fires only on a real user date selection (never on page load), so it
@@ -1455,23 +1456,23 @@ Then message Kait with your name + pickup date to confirm.
         return;
       }
 
-      // Mon–Thu: 12pm–8pm hourly. Fri–Sat: 12pm–9pm hourly.
-      const hours = (day >= 1 && day <= 4)
-        ? [12, 13, 14, 15, 16, 17, 18, 19, 20]
-        : [12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
+      // Mon–Thu: 12pm–8pm every 30 minutes. Fri–Sat: 12pm–9pm every 30 minutes.
+      const startMinutes = 12 * 60; // 12:00 PM
+      const endMinutes = (day >= 1 && day <= 4) ? 20 * 60 : 21 * 60; // 8pm or 9pm
 
-      hours.forEach(h => {
+      for (let t = startMinutes; t <= endMinutes; t += 30) {
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'time-slot';
-        btn.textContent = formatHour(h);
+        const label = formatTime(t);
+        btn.textContent = label;
         btn.onclick = () => {
           document.querySelectorAll('.time-slot').forEach(b => b.classList.remove('selected'));
           btn.classList.add('selected');
-          selectedPickupTime = formatHour(h);
+          selectedPickupTime = label;
         };
         slotsContainer.appendChild(btn);
-      });
+      }
 
       wrap.style.display = 'block';
       updateSummary();
