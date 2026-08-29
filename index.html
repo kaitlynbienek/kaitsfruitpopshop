@@ -1091,6 +1091,40 @@
         Then message Kait a screenshot of the payment along with your name + pickup date to lock in the order. Kait will respond shortly to confirm!
       </div>
     </section>
+
+    <!-- Large Events / Catering — quiet inquiry card, not a promotional banner -->
+    <section class="reveal">
+      <h2>🎉 Planning a Large Event?</h2>
+      <p style="color:#64748b; font-size:0.95rem;">
+        For parties, weddings, or bigger gatherings beyond our regular menu, send over your event details and we'll let you know if we can make it happen.
+      </p>
+      <button type="button" class="btn" style="margin-top:14px; background:white; color:var(--pink); border:2px solid var(--pink); box-shadow:none;" onclick="toggleCateringForm()">
+        Request a Catering Quote
+      </button>
+
+      <div id="cateringForm" style="display:none; margin-top:20px;">
+        <label for="catName">Your Name</label>
+        <input type="text" id="catName" placeholder="First & last name">
+
+        <label for="catContact">Phone or Email</label>
+        <input type="text" id="catContact" placeholder="Best way to reach you">
+
+        <label for="catDate">Event Date</label>
+        <input type="date" id="catDate">
+
+        <label for="catGuests">Approximate Guest Count</label>
+        <input type="text" id="catGuests" placeholder="e.g. 30 people">
+
+        <label for="catDetails">Event Details</label>
+        <textarea id="catDetails" placeholder="Tell us about the event — type, flavors you're interested in, budget range, anything helpful"></textarea>
+
+        <button type="button" class="btn" style="margin-top:8px;" onclick="submitCateringInquiry()">Send Inquiry</button>
+
+        <div id="cateringSuccess" style="display:none; margin-top:16px; background:#dcfce7; border:2px solid #86efac; color:#166534; padding:16px; border-radius:16px; text-align:center;">
+          ✅ Got it! We'll review your event details and reach out to confirm whether we can take it on, along with a deposit to secure your date.
+        </div>
+      </div>
+    </section>
   </div>
 
   <div class="container" style="margin-top: -10px; margin-bottom: 20px;">
@@ -1102,6 +1136,9 @@
   </div>
 
   <footer>
+    <p style="font-size:0.9rem; color:#64748b; max-width:400px; margin:0 auto 6px;">
+      Prefer to order directly? Message me and I'll get back to you with a deposit amount to secure your pickup date.
+    </p>
     <div class="social-links">
       <a href="https://www.instagram.com/kaitsfruitpopshop" target="_blank" aria-label="Instagram">
         <i class="fa-brands fa-instagram"></i>
@@ -1390,6 +1427,56 @@
 
     // Completes the order: books the slot in the shared sheet, sends the
     // order to splitforms, and shows the success message + clipboard copy.
+    // Reveals the catering inquiry form when the button is clicked — stays
+    // hidden by default so it doesn't compete with the main shop for attention.
+    function toggleCateringForm() {
+      const form = document.getElementById('cateringForm');
+      form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function submitCateringInquiry() {
+      const name = document.getElementById('catName').value.trim();
+      const contact = document.getElementById('catContact').value.trim();
+      const eventDate = document.getElementById('catDate').value;
+      const guests = document.getElementById('catGuests').value.trim();
+      const details = document.getElementById('catDetails').value.trim();
+
+      if (!name || !contact) {
+        alert('Please enter your name and a way to reach you.');
+        return;
+      }
+
+      // Sent to the same inbox as regular orders, but clearly labeled as a
+      // catering inquiry so it doesn't get confused with a normal order —
+      // this is a request Kait reviews and can accept or decline, not an
+      // automatic checkout.
+      fetch('https://splitforms.com/api/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          access_key: 'e4e782859f5348eba7269c5385868409',
+          subject: 'Catering Inquiry — Kait\'s Fruit Pop Shop',
+          name: name,
+          contact: contact,
+          event_date: eventDate || 'Not specified',
+          guest_count: guests || 'Not specified',
+          event_details: details || 'None provided'
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        console.log('Catering inquiry sent:', data);
+      })
+      .catch(error => {
+        console.error('Catering inquiry submission error:', error);
+      });
+
+      document.getElementById('cateringSuccess').style.display = 'block';
+    }
+
     function finalizeOrder(date, time, name, phone, notes, orderItemsText, subtotal, deposit) {
       // Books the slot in the shared Google Sheet so it shows as taken for
       // every other visitor from now on.
