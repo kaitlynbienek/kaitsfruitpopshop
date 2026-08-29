@@ -41,10 +41,38 @@
       max-width: 900px;
       margin: 0 auto;
       padding: 0 16px 60px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Floating fruit decals: sit fixed behind everything, gently drifting.
+       Fixed positioning (not absolute) means they stay put as the page
+       scrolls, so they show consistently in the gaps around your cards
+       instead of disappearing after one scroll. */
+    .fruit-decals {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .fruit-decal {
+      position: absolute;
+      opacity: 0.18;
+      animation: fruit-float 10s ease-in-out infinite;
+      filter: blur(0.3px);
+    }
+
+    @keyframes fruit-float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50%      { transform: translateY(-24px) rotate(12deg); }
     }
 
     /* Header */
     header {
+      position: relative;
+      z-index: 1;
       text-align: center;
       padding: 40px 16px 30px;
       background: linear-gradient(135deg, var(--pink), var(--purple));
@@ -739,6 +767,18 @@
   </style>
 </head>
 <body>
+
+  <div class="fruit-decals" aria-hidden="true">
+    <span class="fruit-decal" style="top:8%; left:6%; font-size:2.4rem; animation-delay:0s;">🍇</span>
+    <span class="fruit-decal" style="top:18%; left:88%; font-size:2rem; animation-delay:1.5s;">🍓</span>
+    <span class="fruit-decal" style="top:34%; left:14%; font-size:1.8rem; animation-delay:3s;">🥝</span>
+    <span class="fruit-decal" style="top:48%; left:92%; font-size:2.6rem; animation-delay:0.8s;">🍍</span>
+    <span class="fruit-decal" style="top:62%; left:4%; font-size:2.2rem; animation-delay:2.2s;">🍇</span>
+    <span class="fruit-decal" style="top:76%; left:90%; font-size:1.9rem; animation-delay:4s;">🍓</span>
+    <span class="fruit-decal" style="top:88%; left:10%; font-size:2.3rem; animation-delay:1s;">🍭</span>
+    <span class="fruit-decal" style="top:25%; left:50%; font-size:1.7rem; animation-delay:3.5s;">🍬</span>
+  </div>
+
   <header>
     <h1 style="font-size: 2.7rem; letter-spacing: -1px; text-shadow: 0 3px 12px rgba(0,0,0,0.25);">Kait’s Fruit Pop Shop</h1>
     <p>Candied • Extreme Sour • Frozen Fruit</p>
