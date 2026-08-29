@@ -59,7 +59,7 @@
 
     .fruit-decal {
       position: absolute;
-      opacity: 0.18;
+      opacity: 0.28;
       animation: fruit-float 10s ease-in-out infinite;
       filter: blur(0.3px);
     }
@@ -388,7 +388,8 @@
 
     /* Sections */
     section {
-      background: var(--card);
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(2px);
       border-radius: 20px;
       padding: 24px;
       margin-bottom: 24px;
@@ -777,6 +778,10 @@
     <span class="fruit-decal" style="top:76%; left:90%; font-size:1.9rem; animation-delay:4s;">🍓</span>
     <span class="fruit-decal" style="top:88%; left:10%; font-size:2.3rem; animation-delay:1s;">🍭</span>
     <span class="fruit-decal" style="top:25%; left:50%; font-size:1.7rem; animation-delay:3.5s;">🍬</span>
+    <span class="fruit-decal" style="top:42%; left:70%; font-size:1.6rem; animation-delay:2.8s;">🥝</span>
+    <span class="fruit-decal" style="top:56%; left:30%; font-size:1.9rem; animation-delay:1.2s;">🍭</span>
+    <span class="fruit-decal" style="top:70%; left:60%; font-size:1.7rem; animation-delay:0.4s;">🍬</span>
+    <span class="fruit-decal" style="top:94%; left:45%; font-size:1.8rem; animation-delay:3.2s;">🍇</span>
   </div>
 
   <header>
@@ -1623,6 +1628,26 @@ Then message Kait with your name + pickup date to confirm.
     }, { threshold: 0.15 });
 
     document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    // Parallax: shifts the whole decal layer at a fraction of scroll speed,
+    // so the fruit drifts as you scroll instead of staying glued to the
+    // same screen position. requestAnimationFrame keeps it smooth and only
+    // does the work once per frame, even if scroll events fire more often.
+    const fruitDecals = document.querySelector('.fruit-decals');
+    let parallaxTicking = false;
+
+    function updateParallax() {
+      const offset = window.scrollY * 0.25;
+      fruitDecals.style.transform = `translateY(${offset}px)`;
+      parallaxTicking = false;
+    }
+
+    window.addEventListener('scroll', () => {
+      if (!parallaxTicking) {
+        requestAnimationFrame(updateParallax);
+        parallaxTicking = true;
+      }
+    });
 
     // Switches which featured card is visible (0 = Sample Box, 1 = Bundle).
     // Simple show/hide — no scrolling involved, so there's nothing to miss.
