@@ -585,6 +585,14 @@
       color: white;
     }
 
+    .time-slot.taken {
+      background: #f1f1f1;
+      border-color: #e0e0e0;
+      color: #b0b0b0;
+      cursor: not-allowed;
+      text-decoration: line-through;
+    }
+
     /* Order Summary */
     .summary-box {
       background: linear-gradient(135deg, #fdf4ff, #f0f9ff);
@@ -820,9 +828,9 @@
 
     <!-- About -->
     <section class="reveal">
-      <h2>✨ Pick-up Only</h2>
-      <p>Made-to-order candied and extreme sour frozen fruit using healthy alternative ingredients (No High Fructose Corn Syrup). Everything is prepared fresh on your pickup day. <strong>Pre-order today!</strong></p>
-      <p style="margin-top:10px;">Pickup is contactless porch pickup — you're welcome to knock if you have questions!</p>
+      <h2>✨ Fresh & Poppin'</h2>
+      <p>Every box is made fresh by hand, right before your pickup day — real sugar, no high fructose corn syrup, just good old-fashioned candy making. <strong>Pre-order today!</strong></p>
+      <p style="margin-top:10px;">Pickup is contactless — just swing by your scheduled time and grab your order from the porch freezer. Got a question? Don't be shy, knock and I'll come say hi!</p>
       <p style="margin-top:10px;"><strong>50% deposit required</strong> to confirm your order (Venmo, Zelle, or Apple Cash).</p>
     </section>
 
@@ -1069,6 +1077,8 @@
 
   <script>
     // Quantities store
+    const SLOT_TRACKER_URL = 'https://script.google.com/macros/s/AKfycbx613bFngaNck9nE9MPrALL5XqBTN7rCfwME9a8f9JGVQi_c5BL5tfqd4z86PPc_q1F8g/exec';
+
     const qty = {
       grapes: 0,
       mango: 0,
@@ -1306,6 +1316,45 @@
       const deposit = subtotal * 0.5;
 
       const orderItemsText = orderLines.join('\n');
+      const chosenDate = date;
+      const chosenTime = selectedPickupTime;
+
+      // Re-check the shared sheet one more time right before finalizing —
+      // catches the rare case where two people picked the same slot within
+      // seconds of each other, before either had submitted.
+      fetch(SLOT_TRACKER_URL)
+        .then(res => res.json())
+        .then(data => {
+          const stillTaken = (data.bookings || []).some(
+            b => b.date === chosenDate && b.time === chosenTime
+          );
+
+          if (stillTaken) {
+            alert('Sorry — that time slot was just booked by someone else. Please choose a different time.');
+            handleDateChange(document.getElementById('pickupDate'));
+            return;
+          }
+
+          finalizeOrder(chosenDate, chosenTime, name, phone, notes, orderItemsText, subtotal, deposit);
+        })
+        .catch(error => {
+          console.error('Could not re-check slot availability, proceeding anyway:', error);
+          finalizeOrder(chosenDate, chosenTime, name, phone, notes, orderItemsText, subtotal, deposit);
+        });
+    }
+
+    // Completes the order: books the slot in the shared sheet, sends the
+    // order to splitforms, and shows the success message + clipboard copy.
+    function finalizeOrder(date, time, name, phone, notes, orderItemsText, subtotal, deposit) {
+      // Books the slot in the shared Google Sheet so it shows as taken for
+      // every other visitor from now on.
+      fetch(SLOT_TRACKER_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ date: date, time: time })
+      }).catch(error => {
+        console.error('Could not book slot in shared sheet:', error);
+      });
 
       // Sends the order to splitforms — emails Kait AND stores it in the
       // splitforms dashboard as a backup in case the email is missed.
@@ -1321,7 +1370,7 @@
           name: name,
           phone: phone,
           pickup_date: date,
-          pickup_time: selectedPickupTime,
+          pickup_time: time,
           order_details: orderItemsText,
           special_requests: notes || 'None',
           subtotal: '$' + subtotal.toFixed(2),
@@ -1342,10 +1391,10 @@
 Name: ${name}
 Phone: ${phone}
 Pickup Date: ${date}
-Pickup Time: ${selectedPickupTime}
+Pickup Time: ${time}
 
 ITEMS:
-${orderLines.join('\n')}
+${orderItemsText}
 
 Subtotal: $${subtotal.toFixed(2)}
 50% Deposit Due: $${deposit.toFixed(2)}
@@ -1375,6 +1424,7 @@ Then message Kait with your name + pickup date to confirm.
       // Scroll to success
       document.getElementById('successMessage').scrollIntoView({ behavior: 'smooth' });
     }
+
 
     // Pickup date window: blocks today + tomorrow, allows up to 3 months out.
     // Enforced silently via the date input's min/max — no on-screen text needed.
@@ -1460,22 +1510,64 @@ Then message Kait with your name + pickup date to confirm.
       const startMinutes = 12 * 60; // 12:00 PM
       const endMinutes = (day >= 1 && day <= 4) ? 20 * 60 : 21 * 60; // 8pm or 9pm
 
-      for (let t = startMinutes; t <= endMinutes; t += 30) {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'time-slot';
-        const label = formatTime(t);
-        btn.textContent = label;
-        btn.onclick = () => {
-          document.querySelectorAll('.time-slot').forEach(b => b.classList.remove('selected'));
-          btn.classList.add('selected');
-          selectedPickupTime = label;
-        };
-        slotsContainer.appendChild(btn);
-      }
-
       wrap.style.display = 'block';
-      updateSummary();
+      slotsContainer.innerHTML = '<p style="font-size:0.85rem; color:#9a8aa8;">Checking available times...</p>';
+
+      // Ask the shared Google Sheet which slots on this date are already
+      // booked, so every visitor (on any device) sees the same availability.
+      fetch(SLOT_TRACKER_URL)
+        .then(res => res.json())
+        .then(data => {
+          const takenTimes = (data.bookings || [])
+            .filter(b => b.date === input.value)
+            .map(b => b.time);
+
+          slotsContainer.innerHTML = '';
+
+          for (let t = startMinutes; t <= endMinutes; t += 30) {
+            const label = formatTime(t);
+            const isTaken = takenTimes.includes(label);
+
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'time-slot' + (isTaken ? ' taken' : '');
+            btn.textContent = isTaken ? label + ' (booked)' : label;
+
+            if (!isTaken) {
+              btn.onclick = () => {
+                document.querySelectorAll('.time-slot').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                selectedPickupTime = label;
+              };
+            } else {
+              btn.disabled = true;
+            }
+
+            slotsContainer.appendChild(btn);
+          }
+
+          updateSummary();
+        })
+        .catch(error => {
+          console.error('Could not check slot availability:', error);
+          // If the check fails (e.g. no internet), fall back to showing all
+          // slots as open rather than blocking the customer entirely.
+          slotsContainer.innerHTML = '';
+          for (let t = startMinutes; t <= endMinutes; t += 30) {
+            const label = formatTime(t);
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'time-slot';
+            btn.textContent = label;
+            btn.onclick = () => {
+              document.querySelectorAll('.time-slot').forEach(b => b.classList.remove('selected'));
+              btn.classList.add('selected');
+              selectedPickupTime = label;
+            };
+            slotsContainer.appendChild(btn);
+          }
+          updateSummary();
+        });
     }
 
     // Scroll reveal: watches every .reveal element, and once it enters the
