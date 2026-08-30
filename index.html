@@ -1573,8 +1573,17 @@ Then message Kait with your name + pickup date to confirm.
       const now = new Date();
       now.setHours(0, 0, 0, 0);
 
-      const minDate = new Date(now);
-      minDate.setDate(minDate.getDate() + 2); // blocks today and tomorrow
+      const standardMinDate = new Date(now);
+      standardMinDate.setDate(standardMinDate.getDate() + 2); // blocks today and tomorrow
+
+      // Kitchen doesn't open until Friday, Sept 4, 2026 — so no pickups
+      // before Sept 5. This is just a floor: once that date has passed,
+      // minDate naturally falls back to the standard 48-hour rule below
+      // without needing to remove this later.
+      const kitchenOpenFloor = new Date(2026, 8, 5); // September 5, 2026
+
+      const minDate = standardMinDate > kitchenOpenFloor ? standardMinDate : kitchenOpenFloor;
+
       const maxDate = new Date(now);
       maxDate.setMonth(maxDate.getMonth() + 3);
 
